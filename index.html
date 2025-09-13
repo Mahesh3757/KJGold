@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KJ GOLD - Client Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #d4af37;
+            color: #2c3e50;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-weight: 700;
+            font-size: 32px;
+            letter-spacing: 1px;
+        }
+        
+        .header p {
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: #d4af37;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .login-btn {
+            background: #2c3e50;
+        }
+        
+        .login-btn:hover {
+            background: #1a252f;
+        }
+        
+        .register-btn {
+            background: #d4af37;
+            margin-top: 10px;
+        }
+        
+        .register-btn:hover {
+            background: #b8941f;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .divider:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #ddd;
+        }
+        
+        .divider span {
+            background: white;
+            position: relative;
+            padding: 0 15px;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .toggle-form {
+            text-align: center;
+            margin-top: 25px;
+            color: #7f8c8d;
+        }
+        
+        .toggle-form a {
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .password-toggle {
+            position: relative;
+        }
+        
+        .password-toggle i {
+            position: absolute;
+            right: 15px;
+            top: 14px;
+            color: #777;
+            cursor: pointer;
+        }
+        
+        .security-note {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+        
+        .security-note i {
+            color: #d4af37;
+            margin-right: 5px;
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+        
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+            padding: 20px;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info span {
+            margin-right: 15px;
+            color: #2c3e50;
+        }
+        
+        .logout-btn {
+            background: #d4af37;
+            padding: 8px 15px;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .dashboard-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .welcome-message {
+            text-align: center;
+            padding: 30px;
+            color: #2c3e50;
+        }
+        
+        .welcome-message i {
+            font-size: 48px;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+        
+        .welcome-message h2 {
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>KJ GOLD</h1>
+            <p>Client Management System</p>
+        </div>
+        
+        <div class="form-container" id="auth-container">
+            <div id="error-message" class="message error"></div>
+            <div id="success-message" class="message success"></div>
+            
+            <h2 class="form-title" id="form-title">Login to Your Account</h2>
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username">
+            </div>
+            
+            <div class="form-group password-toggle">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password">
+                <i class="fas fa-eye" id="toggle-password"></i>
+            </div>
+            
+            <button class="btn login-btn" id="login-btn">
+                <span id="login-text">Login to Dashboard</span>
+                <span id="login-loading" class="loading" style="display: none;"></span>
+            </button>
+            
+            <div class="divider">
+                <span>OR</span>
+            </div>
+            
+            <button class="btn register-btn" id="register-btn" style="display: none;">
+                <span id="register-text">Create New Account</span>
+                <span id="register-loading" class="loading" style="display: none;"></span>
+            </button>
+            
+            <div class="toggle-form">
+                <p id="toggle-text">Don't have an account? <a id="toggle-link">Register now</a></p>
+            </div>
+            
+            <div class="security-note">
+                <p><i class="fas fa-lock"></i> Your data is securely encrypted and private</p>
+            </div>
+        </div>
+        
+        
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAop6R33GJrzzl9WMyhQ1xQwYvJp4AHRIw",
+            authDomain: "kjgold-1ded4.firebaseapp.com",
+            projectId: "kjgold-1ded4",
+            storageBucket: "kjgold-1ded4.firebasestorage.app",
+            messagingSenderId: "547004315734",
+            appId: "1:547004315734:web:fed5dc819e42f5597d23f7",
+            measurementId: "G-B47GQ3ND0L"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const formTitle = document.getElementById('form-title');
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            const toggleText = document.getElementById('toggle-text');
+            const toggleLink = document.getElementById('toggle-link');
+            const togglePassword = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password');
+            const usernameInput = document.getElementById('username');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const loginText = document.getElementById('login-text');
+            const loginLoading = document.getElementById('login-loading');
+            const registerText = document.getElementById('register-text');
+            const registerLoading = document.getElementById('register-loading');
+            const authContainer = document.getElementById('auth-container');
+            const dashboard = document.getElementById('dashboard');
+            const userNameSpan = document.getElementById('user-name');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            let isLoginMode = true;
+            
+            // Toggle between login and register forms
+            toggleLink.addEventListener('click', function() {
+                isLoginMode = !isLoginMode;
+                
+                if (isLoginMode) {
+                    formTitle.textContent = 'Login to Your Account';
+                    loginBtn.style.display = 'block';
+                    registerBtn.style.display = 'none';
+                    toggleText.innerHTML = 'Don\'t have an account? <a id="toggle-link">Register now</a>';
+                } else {
+                    formTitle.textContent = 'Create Business Account';
+                    loginBtn.style.display = 'none';
+                    registerBtn.style.display = 'block';
+                    toggleText.innerHTML = 'Already have an account? <a id="toggle-link">Login now</a>';
+                }
+                
+                // Clear any messages
+                hideMessages();
+                
+                // Reattach event listener to the new link
+                document.getElementById('toggle-link').addEventListener('click', arguments.callee);
+            });
+            
+            // Toggle password visibility
+            togglePassword.addEventListener('click', function() {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    togglePassword.classList.remove('fa-eye');
+                    togglePassword.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    togglePassword.classList.remove('fa-eye-slash');
+                    togglePassword.classList.add('fa-eye');
+                }
+            });
+            
+            // Form submission - Login
+          // Form submission - Login
+loginBtn.addEventListener('click', function() {
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+    
+    if (!username) {
+        showError('Please enter your username.');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showError('Password must be at least 6 characters long.');
+        return;
+    }
+    
+    // Show loading state
+    loginText.style.display = 'none';
+    loginLoading.style.display = 'inline-block';
+    
+    // First get the email associated with this username
+    db.collection('users')
+        .where('username', '==', username)
+        .get()
+        .then((querySnapshot) => {
+            if (querySnapshot.empty) {
+                throw new Error('No account found with this username.');
+            }
+            
+            // Get the first matching user document
+            const userDoc = querySnapshot.docs[0];
+            const userData = userDoc.data();
+            
+            if (!userData.email) {
+                throw new Error('User account data is invalid.');
+            }
+            
+            // Sign in with the email associated with this username
+            return auth.signInWithEmailAndPassword(userData.email, password);
+        })
+        .then((userCredential) => {
+            // Signed in 
+            const user = userCredential.user;
+            showSuccess('Login successful! Redirecting to dashboard...');
+            
+            // Redirect to user dashboard page after a brief delay
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        })
+        .catch((error) => {
+            loginText.style.display = 'inline-block';
+            loginLoading.style.display = 'none';
+            
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            
+            if (errorCode === 'auth/user-not-found' || errorMessage.includes('No account found')) {
+                showError('No account found with this username.');
+            } else if (errorCode === 'auth/wrong-password') {
+                showError('Incorrect password. Please try again.');
+            } else {
+                showError(errorMessage);
+            }
+        });
+});
+            
+            // Form submission - Registration
+            registerBtn.addEventListener('click', function() {
+                const username = usernameInput.value;
+                const password = passwordInput.value;
+                
+                if (!username) {
+                    showError('Please choose a username.');
+                    return;
+                }
+                
+                if (username.length < 3) {
+                    showError('Username must be at least 3 characters long.');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showError('Password must be at least 6 characters long.');
+                    return;
+                }
+                
+                // Show loading state
+                registerText.style.display = 'none';
+                registerLoading.style.display = 'inline-block';
+                
+                // Check if username already exists
+                db.collection('users')
+                    .where('username', '==', username)
+                    .get()
+                    .then((querySnapshot) => {
+                        if (!querySnapshot.empty) {
+                            throw new Error('This username is already taken. Please choose another one.');
+                        }
+                        
+                        // Generate a unique email for Firebase auth (since it requires email)
+                        const email = `${username}@kjgold.app`;
+                        
+                        // Create user with Firebase
+                        return auth.createUserWithEmailAndPassword(email, password);
+                    })
+                    .then((userCredential) => {
+                        // Signed up 
+                        const user = userCredential.user;
+                        
+                        // Create a user document in Firestore with username
+                        return db.collection('users').doc(user.uid).set({
+                            username: username,
+                            email: user.email, // Store the generated email
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    })
+                    .then(() => {
+                        showSuccess('Account created successfully! You can now login.');
+                        
+                        // Switch to login view
+                        setTimeout(() => {
+                            isLoginMode = true;
+                            formTitle.textContent = 'Login to Your Account';
+                            loginBtn.style.display = 'block';
+                            registerBtn.style.display = 'none';
+                            toggleText.innerHTML = 'Don\'t have an account? <a id="toggle-link">Register now</a>';
+                            document.getElementById('toggle-link').addEventListener('click', toggleLink.click);
+                            
+                            registerText.style.display = 'inline-block';
+                            registerLoading.style.display = 'none';
+                        }, 2000);
+                    })
+                    .catch((error) => {
+                        registerText.style.display = 'inline-block';
+                        registerLoading.style.display = 'none';
+                        
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        
+                        if (errorCode === 'auth/email-already-in-use' || errorMessage.includes('already taken')) {
+                            showError('This username is already taken. Please choose another one.');
+                        } else {
+                            showError(errorMessage);
+                        }
+                    });
+            });
+            
+            // Logout functionality
+            logoutBtn.addEventListener('click', function() {
+                auth.signOut().then(() => {
+                    showSuccess('Logged out successfully.');
+                    authContainer.style.display = 'block';
+                    dashboard.style.display = 'none';
+                }).catch((error) => {
+                    showError('Error signing out: ' + error.message);
+                });
+            });
+            
+            // Load user-specific data from Firestore
+            function loadUserData(userId) {
+                // Show dashboard
+                authContainer.style.display = 'none';
+                dashboard.style.display = 'block';
+                
+                // Get username from Firestore
+                db.collection('users').doc(userId).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            userNameSpan.textContent = userData.username;
+                        } else {
+                            userNameSpan.textContent = "User";
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error getting user document:", error);
+                        userNameSpan.textContent = "User";
+                    });
+                
+                // Hide login loading
+                loginText.style.display = 'inline-block';
+                loginLoading.style.display = 'none';
+            }
+            
+            // Helper functions
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
+            
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+            
+            function hideMessages() {
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+            }
+            
+            // Check if user is already logged in
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in, show dashboard
+                    authContainer.style.display = 'none';
+                    dashboard.style.display = 'block';
+                    loadUserData(user.uid);
+                } else {
+                    // User is signed out
+                    authContainer.style.display = 'block';
+                    dashboard.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

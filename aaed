@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management - KJ GOLD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 0;
+        }
+
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(to right, #2c3e50, #1a2530);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            color: #d4af37;
+            font-weight: 700;
+        }
+
+        .menu-btn {
+            background: transparent;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            transition: right 0.3s ease;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-menu.show {
+            right: 0;
+        }
+
+        .menu-header {
+            background: linear-gradient(to right, #2c3e50, #1a2530);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .menu-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .menu-header h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .menu-header p {
+            font-size: 14px;
+            color: #b8c2cc;
+        }
+
+        .menu-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .menu-items {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            color: #2c3e50;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: #f8f9fa;
+            color: #d4af37;
+            border-left: 4px solid #d4af37;
+        }
+
+        .menu-item i {
+            margin-right: 15px;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-footer {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .welcome-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .welcome-section h2 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .username-display {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .card-header h3 {
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: #d4af37;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #c29a2a;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .privacy-notice {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .privacy-notice h4 {
+            color: #3498db;
+            margin-bottom: 8px;
+        }
+
+        /* Customer List */
+        .customer-list {
+            margin-top: 15px;
+        }
+
+        .customer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .customer-info h4 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .customer-info p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .customer-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: #f8f9fa;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: #e9ecef;
+            color: #2c3e50;
+        }
+
+        /* Right Side - Empty as requested */
+        .right-side {
+            display: none;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #2c3e50;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #d4af37;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Overlay for when menu is open */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        /* Loading and empty states */
+        .loading-text, .no-customers, .error-text {
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        /* Debug info */
+        .debug-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid #e74c3c;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .debug-toggle {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .dashboard-container {
+                flex-direction: row;
+            }
+            
+            .header {
+                display: none;
+            }
+            
+            /* Sidebar for larger screens */
+            .sidebar {
+                width: 250px;
+                background: linear-gradient(to bottom, #2c3e50, #1a2530);
+                color: white;
+                padding: 20px 0;
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .logo {
+                text-align: center;
+                padding: 20px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .logo h1 {
+                font-size: 24px;
+            }
+            
+            .user-profile {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .avatar {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                background: #d4af37;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 32px;
+                color: white;
+                margin-bottom: 15px;
+            }
+            
+            .user-profile h2 {
+                font-size: 18px;
+                margin-bottom: 5px;
+            }
+            
+            .user-profile p {
+                font-size: 14px;
+                color: #b8c2cc;
+            }
+            
+            .nav-links {
+                padding: 20px 0;
+                flex: 1;
+            }
+            
+            .nav-item {
+                padding: 12px 25px;
+                display: flex;
+                align-items: center;
+                color: #b8c2cc;
+                text-decoration: none;
+                transition: all 0.3s;
+            }
+            
+            .nav-item:hover, .nav-item.active {
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+                border-left: 4px solid #d4af37;
+            }
+            
+            .nav-item i {
+                margin-right: 15px;
+                font-size: 18px;
+            }
+            
+            .mobile-menu {
+                display: none;
+            }
+            
+            .overlay {
+                display: none !important;
+            }
+            
+            .main-content {
+                flex: 1;
+                padding: 30px;
+            }
+            
+            /* Right side empty on desktop */
+            .right-side {
+                display: block;
+                width: 250px;
+                background: transparent;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .customer-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .customer-actions {
+                align-self: flex-end;
+            }
+        }
+    </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header for Mobile -->
+        <div class="header">
+            <div class="logo">
+                <h1>KJ GOLD</h1>
+            </div>
+            <button class="menu-btn" id="mobile-menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="overlay" id="overlay"></div>
+        <div class="mobile-menu" id="mobile-menu">
+            <div class="menu-header">
+                <button class="menu-close" id="menu-close">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="menu-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 id="mobile-username">John Doe</h2>
+                <p>Premium Member</p>
+            </div>
+            
+            <div class="menu-items">
+                <a href="dashboard.html" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="customers.html" class="menu-item active">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </a>
+                <a href="#" class="menu-item" id="mobile-add-customer">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Customer</span>
+                </a>
+               
+                <a href="#" class="menu-item" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+            
+            <div class="menu-footer">
+                <p>KJ GOLD &copy; 2023</p>
+            </div>
+        </div>
+        
+        <!-- Sidebar for Desktop -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>KJ GOLD</h1>
+                <p>Client Management System</p>
+            </div>
+            
+            <div class="user-profile">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 id="desktop-username">John Doe</h2>
+                <p>Premium Member</p>
+            </div>
+            
+            <div class="nav-links">
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="customers.html" class="nav-item active">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </a>
+                <a href="#" class="nav-item" id="add-customer-sidebar">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Customer</span>
+                </a>
+               
+                <a href="#" class="nav-item" id="logout-btn-desktop">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="welcome-section">
+                <h2>Customer Management</h2>
+                <p>Manage your customer database efficiently</p>
+                <div class="username-display">
+                    Welcome, <span id="welcome-username">User</span>
+                </div>
+            </div>
+            
+            <div class="debug-info" id="debug-info">
+                <h4>Debug Information</h4>
+                <div id="debug-content"></div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Customer List</h3>
+                    <button class="btn btn-primary" id="add-customer-btn">
+                        <i class="fas fa-user-plus"></i> Add Customer
+                    </button>
+                </div>
+                
+                <div class="customer-list" id="customer-list">
+                    <!-- Customer items will be dynamically added here -->
+                    <div class="loading-text">Loading customers...</div>
+                </div>
+            </div>
+            
+            <div class="privacy-notice">
+                <h4>Privacy Notice</h4>
+                <p>We take your privacy seriously. All customer information is securely stored and will never be shared with third parties without your consent.</p>
+            </div>
+        </div>
+        
+        <!-- Right Side - Empty as requested -->
+        <div class="right-side">
+            <!-- Intentionally left blank -->
+        </div>
+    </div>
+    
+    <!-- Add Customer Modal -->
+    <div class="modal" id="customer-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Customer</h3>   
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            
+            <form id="customer-form">
+                <div class="form-group">
+                    <label for="customer-name">Full Name *</label>
+                    <input type="text" id="customer-name" placeholder="Enter customer name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customer-phone">Mobile Number *</label>
+                    <input type="tel" id="customer-phone" placeholder="Enter mobile number" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-save"></i> Save Customer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <button class="debug-toggle" id="debug-toggle">
+        <i class="fas fa-bug"></i>
+    </button>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAop6R33GJrzzl9WMyhQ1xQwYvJp4AHRIw",
+            authDomain: "kjgold-1ded4.firebaseapp.com",
+            projectId: "kjgold-1ded4",
+            storageBucket: "kjgold-1ded4.firebasestorage.app",
+            messagingSenderId: "547004315734",
+            appId: "1:547004315734:web:fed5dc819e42f5597d23f7",
+            measurementId: "G-B47GQ3ND0L"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // Debug functionality
+        let debugMode = false;
+        const debugToggle = document.getElementById('debug-toggle');
+        const debugInfo = document.getElementById('debug-info');
+        const debugContent = document.getElementById('debug-content');
+        
+        debugToggle.addEventListener('click', function() {
+            debugMode = !debugMode;
+            debugInfo.style.display = debugMode ? 'block' : 'none';
+            updateDebugInfo();
+        });
+        
+        function updateDebugInfo() {
+            if (!debugMode) return;
+            
+            const user = auth.currentUser;
+            const debugHTML = `
+                <p><strong>User:</strong> ${user ? user.uid : 'Not authenticated'}</p>
+                <p><strong>Email:</strong> ${user ? user.email : 'N/A'}</p>
+                <p><strong>Firestore Rules:</strong> ${getRulesStatus()}</p>
+            `;
+            
+            debugContent.innerHTML = debugHTML;
+        }
+        
+        function getRulesStatus() {
+            return "Rules: request.auth.uid == resource.data.userId (for read/write)";
+        }
+        
+        function logDebug(message) {
+            if (debugMode) {
+                console.log("DEBUG:", message);
+                const timestamp = new Date().toLocaleTimeString();
+                debugContent.innerHTML += `<p>[${timestamp}] ${message}</p>`;
+            }
+        }
+        
+        // Check authentication state
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                // User is not authenticated, redirect to login page
+                window.location.href = 'index.html';
+            } else {
+                // User is authenticated, load their data
+                logDebug(`User authenticated: ${user.uid}`);
+                loadUserData(user.uid);
+                loadCustomers(user.uid);
+                updateDebugInfo();
+            }
+        });
+        
+        // Mobile menu functionality
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        });
+        
+        document.getElementById('menu-close').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        });
+        
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.remove('show');
+            this.classList.remove('show');
+        });
+        
+        // Open modal when Add Customer is clicked
+        document.getElementById('add-customer-sidebar').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('customer-modal').classList.add('show');
+        });
+        
+        document.getElementById('add-customer-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('customer-modal').classList.add('show');
+        });
+        
+        document.getElementById('mobile-add-customer').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('customer-modal').classList.add('show');
+            document.getElementById('mobile-menu').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        });
+        
+        // Close modal
+        document.getElementById('close-modal').addEventListener('click', function() {
+            document.getElementById('customer-modal').classList.remove('show');
+        });
+        
+        // Handle form submission
+        document.getElementById('customer-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('customer-name').value;
+            const phone = document.getElementById('customer-phone').value;
+           
+            if (name && phone) {
+                addCustomer(name, phone);
+            }
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target.matches('#customer-modal')) {
+                document.getElementById('customer-modal').classList.remove('show');
+            }
+        });
+        
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            });
+        });
+        
+        document.getElementById('logout-btn-desktop').addEventListener('click', function(e) {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            });
+        });
+        
+        // Load user-specific data from Firestore
+        function loadUserData(userId) {
+            // Get username from Firestore
+            db.collection('users').doc(userId).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        document.getElementById('mobile-username').textContent = userData.username;
+                        document.getElementById('desktop-username').textContent = userData.username;
+                        document.getElementById('welcome-username').textContent = userData.username;
+                    } else {
+                        // If user document doesn't exist, use auth display name or UID
+                        const user = auth.currentUser;
+                        const displayName = user.displayName || user.email || "User";
+                        document.getElementById('mobile-username').textContent = displayName;
+                        document.getElementById('desktop-username').textContent = displayName;
+                        document.getElementById('welcome-username').textContent = displayName;
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error getting user document:", error);
+                    // Fallback if user document can't be loaded
+                    const user = auth.currentUser;
+                    const displayName = user.displayName || user.email || "User";
+                    document.getElementById('mobile-username').textContent = displayName;
+                    document.getElementById('desktop-username').textContent = displayName;
+                    document.getElementById('welcome-username').textContent = displayName;
+                });
+        }
+        
+        // Load customers from Firestore
+        function loadCustomers(userId) {
+            const customerList = document.getElementById('customer-list');
+            customerList.innerHTML = '<p class="loading-text">Loading customers...</p>';
+            
+            db.collection('customers')
+                .where('userId', '==', userId)
+                .orderBy('createdAt', 'desc')
+                .onSnapshot((querySnapshot) => {
+                    customerList.innerHTML = '';
+                    
+                    if (querySnapshot.empty) {
+                        customerList.innerHTML = '<p class="no-customers">No customers found. Add your first customer!</p>';
+                        return;
+                    }
+                    
+                    querySnapshot.forEach((doc) => {
+                        const customer = doc.data();
+                        const customerItem = document.createElement('div');
+                        customerItem.className = 'customer-item';
+                        customerItem.innerHTML = `
+                            <div class="customer-info">
+                                <h4>${customer.name}</h4>
+                                <p>${customer.phone}</p>
+                            </div>
+                            <div class="customer-actions">
+                                <button class="action-btn edit-customer" data-id="${doc.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn delete-customer" data-id="${doc.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        customerList.appendChild(customerItem);
+                    });
+                    
+                    // Add event listeners for edit and delete buttons
+                    document.querySelectorAll('.edit-customer').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const customerId = this.getAttribute('data-id');
+                            editCustomer(customerId);
+                        });
+                    });
+                    
+                    document.querySelectorAll('.delete-customer').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const customerId = this.getAttribute('data-id');
+                            deleteCustomer(customerId);
+                        });
+                    });
+                }, (error) => {
+                    console.error("Error loading customers: ", error);
+                    customerList.innerHTML = '<p class="error-text">Error loading customers. Please try again.</p>';
+                    logDebug(`Error loading customers: ${error.message}`);
+                });
+        }
+        
+        // Add customer to Firestore
+        function addCustomer(name, phone) {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("You must be logged in to add customers.");
+                return;
+            }
+            
+            // Show loading state
+            const submitBtn = document.querySelector('#customer-form button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            submitBtn.disabled = true;
+            
+            // Create customer data with proper structure
+            const customerData = {
+                name: name,
+                phone: phone,
+                userId: user.uid,  // This must match the security rule expectation
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            logDebug(`Adding customer: ${JSON.stringify(customerData)}`);
+            
+            db.collection('customers').add(customerData)
+            .then(() => {
+                // Customer added successfully
+                logDebug("Customer added successfully");
+                alert("Customer added successfully!");
+                document.getElementById('customer-modal').classList.remove('show');
+                document.getElementById('customer-form').reset();
+            })
+            .catch((error) => {
+                console.error("Error adding customer: ", error);
+                console.error("Error code:", error.code);
+                console.error("Error message:", error.message);
+                
+                logDebug(`Error: ${error.code} - ${error.message}`);
+                
+                // More specific error handling
+                if (error.code === 'permission-denied') {
+                    alert("Permission denied. Please check your security rules. Your rules require that the userId in the document matches the authenticated user's ID.");
+                } else {
+                    alert("Error adding customer: " + error.message);
+                }
+            })
+            .finally(() => {
+                // Restore button state
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                updateDebugInfo();
+            });
+        }
+        
+        // Edit customer (placeholder function)
+        function editCustomer(customerId) {
+            alert('Edit functionality for customer ID: ' + customerId + ' will be implemented here.');
+        }
+        
+        // Delete customer
+        function deleteCustomer(customerId) {
+            if (confirm('Are you sure you want to delete this customer?')) {
+                db.collection('customers').doc(customerId).delete()
+                .then(() => {
+                    alert("Customer deleted successfully!");
+                })
+                .catch((error) => {
+                    console.error("Error deleting customer: ", error);
+                    alert("Error deleting customer. Please try again.");
+                });
+            }
+        }
+    </script>
+</body>
+</html>

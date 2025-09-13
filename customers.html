@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management - KJ GOLD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%); min-height: 100vh; color: #333; padding: 0; }
+        .dashboard-container { display: flex; flex-direction: column; min-height: 100vh; }
+        .header { background: linear-gradient(to right, #2c3e50, #1a2530); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
+        .logo h1 { font-size: 20px; color: #d4af37; font-weight: 700; }
+        .menu-btn { background: transparent; color: white; border: none; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+        .mobile-menu { position: fixed; top: 0; right: -100%; width: 80%; height: 100%; background: white; z-index: 1000; transition: right 0.3s ease; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; }
+        .mobile-menu.show { right: 0; }
+        .menu-header { background: linear-gradient(to right, #2c3e50, #1a2530); padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .menu-avatar { width: 70px; height: 70px; border-radius: 50%; background: #d4af37; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; margin-bottom: 15px; }
+        .menu-header h2 { font-size: 18px; margin-bottom: 5px; color: white; }
+        .menu-header p { font-size: 14px; color: #b8c2cc; }
+        .menu-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        .menu-items { flex: 1; padding: 20px 0; overflow-y: auto; }
+        .menu-item { padding: 15px 25px; display: flex; align-items: center; color: #2c3e50; text-decoration: none; transition: all 0.3s; border-left: 4px solid transparent; }
+        .menu-item:hover, .menu-item.active { background: #f8f9fa; color: #d4af37; border-left: 4px solid #d4af37; }
+        .menu-item i { margin-right: 15px; font-size: 18px; width: 24px; text-align: center; }
+        .menu-footer { padding: 15px; border-top: 1px solid #eee; text-align: center; color: #6c757d; font-size: 12px; }
+        .main-content { flex: 1; padding: 20px; display: flex; flex-direction: column; }
+        .welcome-section { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); margin-bottom: 20px; text-align: center; }
+        .welcome-section h2 { font-size: 22px; color: #2c3e50; margin-bottom: 10px; }
+        .welcome-section p { color: #6c757d; margin-bottom: 15px; }
+        .username-display { background: #f8f9fa; padding: 10px 15px; border-radius: 8px; font-weight: 600; color: #2c3e50; display: inline-block; margin-top: 10px; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); margin-bottom: 20px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .card-header h3 { font-size: 18px; color: #2c3e50; }
+        .btn { padding: 10px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-primary { background: #d4af37; color: white; }
+        .btn-primary:hover { background: #c29a2a; }
+        .btn i { margin-right: 8px; }
+        .customer-list { margin-top: 15px; }
+        .customer-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s; }
+        .customer-item:hover { background-color: #f8f9fa; }
+        .customer-info h4 { color: #2c3e50; margin-bottom: 5px; }
+        .customer-info p { color: #6c757d; font-size: 14px; }
+        .customer-actions { display: flex; gap: 10px; }
+        .action-btn { background: #f8f9fa; border: none; width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #6c757d; transition: all 0.3s; }
+        .action-btn:hover { background: #e9ecef; color: #2c3e50; }
+        .transactions-section { display: none; margin-top: 20px; }
+        .back-button { background: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-bottom: 15px; display: inline-flex; align-items: center; }
+        .back-button i { margin-right: 8px; }
+        .transactions-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .transactions-table th, .transactions-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .transactions-table th { background-color: #f8f9fa; font-weight: 600; color: #2c3e50; }
+        .transactions-table tr:hover { background-color: #f8f9fa; }
+        .add-transaction-btn { margin-top: 15px; }
+        .right-side { display: none; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; display: none; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; border-radius: 12px; width: 90%; max-width: 400px; padding: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { color: #2c3e50; }
+        .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #6c757d; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #2c3e50; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: border 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #d4af37; outline: none; box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999; display: none; }
+        .overlay.show { display: block; }
+        .loading-text, .no-customers, .error-text, .no-transactions { padding: 20px; text-align: center; color: #6c757d; font-style: italic; }
+        /* Filters and summary */
+        .filter-controls { margin-bottom: 20px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .filter-controls label { font-weight: 500; color: #2c3e50; }
+        .filter-controls input, .filter-controls select { padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 16px; }
+        .print-btn { background: #d4af37; color: white; border: none; border-radius: 8px; padding: 10px 16px; cursor: pointer; font-weight: 600; transition: background 0.3s; }
+        .print-btn:hover { background: #c29a2a; }
+        .summary-table { width: 100%; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px; border-collapse: collapse; }
+        .summary-table th, .summary-table td { padding: 12px 15px; border-bottom: 1px solid #eee; text-align: left; }
+        .summary-table th { background-color: #e9e9e9; }
+        .summary-title {text-align: left; font-size: 20px; color: #d4af37; font-weight: bold; padding: 10px;}
+        .summary-result {font-size: 20px; font-weight: bold; color: #388e3c; background: #f1fff1; border-radius: 8px; margin-top: 10px; margin-bottom: 10px; padding: 14px;}
+        @media (min-width: 768px) {
+            .dashboard-container { flex-direction: row; }
+            .header { display: none; }
+            .sidebar { width: 250px; background: linear-gradient(to bottom, #2c3e50, #1a2530); color: white; padding: 20px 0; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; }
+            .logo { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+            .logo h1 { font-size: 24px; }
+            .user-profile { display: flex; flex-direction: column; align-items: center; padding: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+            .avatar { width: 80px; height: 80px; border-radius: 50%; background: #d4af37; display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; margin-bottom: 15px; }
+            .user-profile h2 { font-size: 18px; margin-bottom: 5px; }
+            .user-profile p { font-size: 14px; color: #b8c2cc; }
+            .nav-links { padding: 20px 0; flex: 1; }
+            .nav-item { padding: 12px 25px; display: flex; align-items: center; color: #b8c2cc; text-decoration: none; transition: all 0.3s; }
+            .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.1); color: white; border-left: 4px solid #d4af37; }
+            .nav-item i { margin-right: 15px; font-size: 18px; }
+            .mobile-menu { display: none; }
+            .overlay { display: none !important; }
+            .main-content { flex: 1; padding: 30px; }
+            .right-side { display: block; width: 250px; background: transparent; }
+        }
+        @media (max-width: 767px) {
+            .sidebar { display: none; }
+            .customer-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .customer-actions { align-self: flex-end; }
+            .transactions-table { display: block; overflow-x: auto; }
+        }
+    </style>
+    <!-- jsPDF for PDF printing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header for Mobile -->
+        <div class="header">
+            <div class="logo">
+                <h1>KJ GOLD</h1>
+            </div>
+            <button class="menu-btn" id="mobile-menu-button">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="overlay" id="overlay"></div>
+        <div class="mobile-menu" id="mobile-menu">
+            <div class="menu-header">
+                <button class="menu-close" id="menu-close">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="menu-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 id="mobile-username">John Doe</h2>
+                <p>Premium Member</p>
+            </div>
+            <div class="menu-items">
+                <a href="dashboard.html" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="customers.html" class="menu-item active">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </a>
+                <a href="#" class="menu-item" id="mobile-add-customer">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Customer</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="menu-item" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+            <div class="menu-footer">
+                <p>KJ GOLD &copy; 2023</p>
+            </div>
+        </div>
+        <!-- Sidebar for Desktop -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>KJ GOLD</h1>
+                <p>Client Management System</p>
+            </div>
+            <div class="user-profile">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 id="desktop-username">John Doe</h2>
+                <p>Premium Member</p>
+            </div>
+            <div class="nav-links">
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="customers.html" class="nav-item active">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </a>
+                <a href="#" class="nav-item" id="add-customer-sidebar">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Add Customer</span>
+                </a>
+                <a href="#" class="nav-item" id="logout-btn-desktop">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="welcome-section">
+                <h2>Customer Management</h2>
+                <p>View and manage all your customers and their transactions</p>
+                <div class="username-display" id="username-display">Welcome, User</div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>All Customers</h3>
+                    <button class="btn btn-primary" id="add-customer-btn">
+                        <i class="fas fa-user-plus"></i> Add Customer
+                    </button>
+                </div>
+                <div class="customer-list" id="customer-list">
+                    <div class="loading-text" id="loading-customers">Loading customers...</div>
+                    <div class="no-customers" id="no-customers" style="display: none;">No customers found. Add your first customer!</div>
+                    <div class="error-text" id="error-customers" style="display: none;">Error loading customers. Please try again.</div>
+                </div>
+            </div>
+            <!-- Transactions Section (initially hidden) -->
+            <div class="transactions-section" id="transactions-section">
+                <button class="back-button" id="back-to-customers">
+                    <i class="fas fa-arrow-left"></i> Back to Customers
+                </button>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 id="customer-transactions-title">Transactions for Customer</h3>
+                    </div>
+                    <!-- FILTER CONTROLS -->
+                    <div class="filter-controls">
+                        <label for="filter-month">Month:</label>
+                        <select id="filter-month"><option value="">All</option></select>
+                        <label for="filter-from">From:</label>
+                        <input type="date" id="filter-from">
+                        <label for="filter-to">To:</label>
+                        <input type="date" id="filter-to">
+                        <button id="apply-filter" class="btn btn-primary">Apply Filter</button>
+                        <button id="clear-filter" class="btn btn-primary">Clear</button>
+                        <button class="print-btn" id="print-summary">Print PDF</button>
+                    </div>
+                    <div id="transactions-summary-section">
+                        <div class="summary-title">KJ GOLD - Transaction Summary</div>
+                        <div style="padding-left:10px; font-size:18px; color:#333;">Customer: <span id="summary-customer-name"></span></div>
+                        <div class="summary-result" id="summary-who-pays"></div>
+                    </div>
+                    <div id="transactions-content">
+                        <div class="loading-text" id="loading-transactions">Loading transactions...</div>
+                        <div class="no-transactions" id="no-transactions" style="display: none;">No transactions found for this customer.</div>
+                        <div class="error-text" id="error-transactions" style="display: none;">Error loading transactions. Please try again.</div>
+                        <table class="transactions-table" id="transactions-table" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Grams</th>
+                                    <th>Touch</th>
+                                    <th>Rate</th>
+                                    <th>Total</th>
+                                    <th>Transaction Type</th>
+                                    <th>Paid/Received</th>
+                                    <th>Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-side"></div>
+    </div>
+    <!-- Add Customer Modal -->
+    <div class="modal" id="customer-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Customer</h3>   
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <form id="customer-form">
+                <div class="form-group">
+                    <label for="customer-name">Full Name *</label>
+                    <input type="text" id="customer-name" placeholder="Enter customer name" required>
+                </div>
+                <div class="form-group">
+                    <label for="customer-phone">Mobile Number *</label>
+                    <input type="tel" id="customer-phone" placeholder="Enter mobile number" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-save"></i> Save Customer
+                </button>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAop6R33GJrzzl9WMyhQ1xQwYvJp4AHRIw",
+            authDomain: "kjgold-1ded4.firebaseapp.com",
+            projectId: "kjgold-1ded4",
+            storageBucket: "kjgold-1ded4.firebasestorage.app",
+            messagingSenderId: "547004315734",
+            appId: "1:547004315734:web:fed5dc819e42f5597d23f7",
+            measurementId: "G-B47GQ3ND0L"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        let currentCustomerId = null;
+        let currentCustomerName = null;
+        let allTransactions = [];
+        auth.onAuthStateChanged((user) => {
+            if (!user) window.location.href = 'index.html';
+            else {
+                loadUserData(user.uid);
+                loadCustomers();
+            }
+        });
+        function loadUserData(userId) {
+            db.collection('users').doc(userId).get().then((doc) => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    document.getElementById('mobile-username').textContent = userData.username;
+                    document.getElementById('desktop-username').textContent = userData.username;
+                    document.getElementById('username-display').textContent = `Welcome, ${userData.username}`;
+                }
+            });
+        }
+        function loadCustomers() {
+            const customerList = document.getElementById('customer-list');
+            const loadingElement = document.getElementById('loading-customers');
+            const noCustomersElement = document.getElementById('no-customers');
+            const errorElement = document.getElementById('error-customers');
+            loadingElement.style.display = 'block';
+            noCustomersElement.style.display = 'none';
+            errorElement.style.display = 'none';
+            customerList.querySelectorAll('.customer-item').forEach(item => item.remove());
+            db.collection('customers')
+             .where("userId", "==", auth.currentUser.uid)
+             .orderBy("name")
+             .get()
+             .then(snapshot => {
+                loadingElement.style.display = 'none';
+                if (snapshot.empty) {
+                    noCustomersElement.style.display = 'block';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const customer = doc.data();
+                    const customerItem = createCustomerElement(doc.id, customer);
+                    customerList.appendChild(customerItem);
+                });
+            }).catch(error => {
+                loadingElement.style.display = 'none';
+                errorElement.style.display = 'block';
+                errorElement.textContent = `Error: ${error.message}`;
+            });
+        }
+        function createCustomerElement(id, customer) {
+            const customerItem = document.createElement('div');
+            customerItem.className = 'customer-item';
+            customerItem.dataset.id = id;
+            customerItem.innerHTML = `
+                <div class="customer-info">
+                    <h4>${customer.name}</h4>
+                    <p>${customer.phone}</p>
+                </div>
+                <div class="customer-actions">
+                    <button class="action-btn view-transactions" title="View Transactions">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            `;
+            customerItem.querySelector('.view-transactions').addEventListener('click', (e) => {
+                e.stopPropagation();
+                viewCustomerTransactions(id, customer.name);
+            });
+            customerItem.addEventListener('click', () => {
+                viewCustomerTransactions(id, customer.name);
+            });
+            return customerItem;
+        }
+        function viewCustomerTransactions(customerId, customerName) {
+            currentCustomerId = customerId;
+            currentCustomerName = customerName;
+            document.querySelector('.card').style.display = 'none';
+            document.getElementById('transactions-section').style.display = 'block';
+            document.getElementById('customer-transactions-title').textContent = `Transactions for ${customerName}`;
+            document.getElementById('summary-customer-name').textContent = customerName;
+            loadTransactions(customerId);
+        }
+        document.getElementById('apply-filter').addEventListener('click', function() { filterAndRenderTransactions(); });
+        document.getElementById('clear-filter').addEventListener('click', function() {
+            document.getElementById('filter-month').value = '';
+            document.getElementById('filter-from').value = '';
+            document.getElementById('filter-to').value = '';
+            filterAndRenderTransactions();
+        });
+        document.getElementById('print-summary').addEventListener('click', function() {
+            let title = "KJ GOLD";
+            let customerName = document.getElementById('summary-customer-name').textContent;
+            let node = document.getElementById('transactions-summary-section');
+            let tableNode = document.getElementById('transactions-table');
+            html2canvas(node).then(function(canvas1) {
+                html2canvas(tableNode).then(function(canvas2) {
+                    let imgData1 = canvas1.toDataURL('image/png');
+                    let imgData2 = canvas2.toDataURL('image/png');
+                    const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+                    let w = pdf.internal.pageSize.getWidth();
+                    let h1 = canvas1.height * w / canvas1.width;
+                    let h2 = canvas2.height * w / canvas2.width;
+                    pdf.setFontSize(22); pdf.text(title, w/2, 15, {align:"center"});
+                    pdf.setFontSize(16); pdf.text("Customer: "+customerName, 10, 25);
+                    pdf.addImage(imgData1, 'PNG', 0, 30, w, h1);
+                    pdf.addPage();
+                    pdf.addImage(imgData2, 'PNG', 0, 15, w, h2);
+                    pdf.save('KJGold_'+customerName+'_transactions.pdf');
+                });
+            });
+        });
+        function populateMonthFilter() {
+            let select = document.getElementById('filter-month');
+            let months = [];
+            allTransactions.forEach(tx => {
+                if (tx.createdAt) {
+                    let d = tx.createdAt.toDate();
+                    let val = d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2);
+                    if (!months.includes(val)) months.push(val);
+                }
+            });
+            select.innerHTML = '<option value="">All</option>';
+            months.sort().reverse().forEach(m => {
+                let [year, month] = m.split('-');
+                let name = new Date(year, month-1, 1).toLocaleString('default', {month:'long'}) + " " + year;
+                select.innerHTML += `<option value="${m}">${name}</option>`;
+            });
+        }
+        function loadTransactions(customerId) {
+            const transactionsBody = document.getElementById('transactions-body');
+            const loadingElement = document.getElementById('loading-transactions');
+            const noTransactionsElement = document.getElementById('no-transactions');
+            const errorElement = document.getElementById('error-transactions');
+            const tableElement = document.getElementById('transactions-table');
+            loadingElement.style.display = 'block';
+            noTransactionsElement.style.display = 'none';
+            errorElement.style.display = 'none';
+            tableElement.style.display = 'none';
+            transactionsBody.innerHTML = '';
+            db.collection('transactions')
+                .where("customerId", "==", customerId)
+                .where("userId", "==", auth.currentUser.uid)
+                .orderBy("createdAt", "desc")
+                .get()
+                .then(snapshot => {
+                    loadingElement.style.display = 'none';
+                    allTransactions = [];
+                    if (snapshot.empty) {
+                        noTransactionsElement.style.display = 'block';
+                        document.getElementById('summary-who-pays').textContent = "No transactions for this customer.";
+                        return;
+                    }
+                    snapshot.forEach(doc => allTransactions.push(doc.data()));
+                    populateMonthFilter();
+                    filterAndRenderTransactions();
+                })
+                .catch(error => {
+                    loadingElement.style.display = 'none';
+                    errorElement.style.display = 'block';
+                    errorElement.textContent = `Error: ${error.message}`;
+                });
+        }
+        function filterAndRenderTransactions() {
+            let monthVal = document.getElementById('filter-month').value;
+            let fromVal = document.getElementById('filter-from').value;
+            let toVal = document.getElementById('filter-to').value;
+            let filtered = allTransactions.filter(tx => {
+                if (!tx.createdAt) return false;
+                let d = tx.createdAt.toDate();
+                if (monthVal) {
+                    let mval = d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2);
+                    if (mval !== monthVal) return false;
+                }
+                if (fromVal) {
+                    let fromDate = new Date(fromVal);
+                    if (d < fromDate) return false;
+                }
+                if (toVal) {
+                    let toDate = new Date(toVal);
+                    if (d > toDate) return false;
+                }
+                return true;
+            });
+            renderTransactionsTable(filtered);
+            renderSummaryResult(filtered);
+        }
+        function renderTransactionsTable(transactions) {
+            const transactionsBody = document.getElementById('transactions-body');
+            const tableElement = document.getElementById('transactions-table');
+            const noTransactionsElement = document.getElementById('no-transactions');
+            transactionsBody.innerHTML = '';
+            if (transactions.length === 0) {
+                tableElement.style.display = 'none';
+                noTransactionsElement.style.display = 'block';
+                return;
+            }
+            tableElement.style.display = 'table';
+            noTransactionsElement.style.display = 'none';
+            transactions.forEach(transaction => {
+                transactionsBody.appendChild(createTransactionRow(transaction));
+            });
+        }
+        function renderSummaryResult(transactions) {
+            let totalBalance = 0;
+            transactions.forEach(transaction => {
+                totalBalance += transaction.balance ? Number(transaction.balance) : 0;
+            });
+            let customerName = document.getElementById('summary-customer-name').textContent;
+            let whoPaysDiv = document.getElementById('summary-who-pays');
+            if (totalBalance > 0.01) {
+                whoPaysDiv.textContent = `${customerName} needs to pay you ₹${totalBalance.toFixed(2)}`;
+                whoPaysDiv.style.color = "#388e3c";
+            } else if (totalBalance < -0.01) {
+                whoPaysDiv.textContent = `You need to pay ${customerName} ₹${Math.abs(totalBalance).toFixed(2)}`;
+                whoPaysDiv.style.color = "#d32f2f";
+            } else {
+                whoPaysDiv.textContent = `No pending balance between you and ${customerName}.`;
+                whoPaysDiv.style.color = "#333";
+            }
+        }
+        function createTransactionRow(transaction) {
+            const row = document.createElement('tr');
+            let dateString = 'N/A';
+            if (transaction.createdAt) {
+                const date = transaction.createdAt.toDate();
+                dateString = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+            }
+            let paidReceived = '';
+            if (transaction.transactionType === 'buy') {
+                paidReceived = "Paid: ₹" +
+                    (transaction.paymentMethod === 'cash'
+                        ? (transaction.cashGiven ? Number(transaction.cashGiven).toFixed(2) : '0.00')
+                        : (transaction.exchangeTotal ? Number(transaction.exchangeTotal).toFixed(2) : '0.00'));
+            } else if (transaction.transactionType === 'sell') {
+                paidReceived = "Received: ₹" +
+                    (transaction.paymentMethod === 'cash'
+                        ? (transaction.cashGiven ? Number(transaction.cashGiven).toFixed(2) : '0.00')
+                        : (transaction.exchangeTotal ? Number(transaction.exchangeTotal).toFixed(2) : '0.00'));
+            }
+            row.innerHTML = `
+                <td>${dateString}</td>
+                <td>${transaction.type || 'N/A'}</td>
+                <td>${transaction.grams || '0'}</td>
+                <td>${transaction.touch || 'N/A'}</td>
+                <td>${transaction.rate || '0'}</td>
+                <td>₹${transaction.total ? Number(transaction.total).toFixed(2) : '0.00'}</td>
+                <td>${transaction.transactionType || 'N/A'}</td>
+                <td>${paidReceived}</td>
+                <td>₹${transaction.balance ? Number(transaction.balance).toFixed(2) : '0.00'}</td>
+            `;
+            return row;
+        }
+        // Modal/menu/logout unchanged
+        document.getElementById('back-to-customers').addEventListener('click', () => {
+            document.getElementById('transactions-section').style.display = 'none';
+            document.querySelector('.card').style.display = 'block';
+        });
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        });
+        document.getElementById('menu-close').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        });
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.remove('show');
+            this.classList.remove('show');
+        });
+        document.getElementById('add-customer-btn').addEventListener('click', function() {
+            document.getElementById('customer-modal').classList.add('show');
+        });
+        document.getElementById('add-customer-sidebar').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('customer-modal').classList.add('show');
+        });
+        document.getElementById('mobile-add-customer').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('customer-modal').classList.add('show');
+            document.getElementById('mobile-menu').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        });
+        document.getElementById('close-modal').addEventListener('click', function() {
+            document.getElementById('customer-modal').classList.remove('show');
+        });
+        window.addEventListener('click', function(event) {
+            if (event.target.matches('#customer-modal')) {
+                document.getElementById('customer-modal').classList.remove('show');
+            }
+        });
+        document.getElementById('customer-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('customer-name').value;
+            const phone = document.getElementById('customer-phone').value;
+            if (name && phone) {
+                db.collection('customers').add({
+                    name,
+                    phone,
+                    userId: auth.currentUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    alert("Customer added successfully!");
+                    document.getElementById('customer-modal').classList.remove('show');
+                    this.reset();
+                    loadCustomers();
+                }).catch(err => {
+                    alert("Error adding customer: " + err.message);
+                });
+            }
+        });
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => window.location.href = 'index.html');
+        });
+        document.getElementById('logout-btn-desktop').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => window.location.href = 'index.html');
+        });
+    </script>
+</body>
+</html>
