@@ -66,19 +66,19 @@
             box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
         }
         
-        .transaction-type, .exchange-type { 
+        .transaction-type, .exchange-type, .cash-direction, .exchange-direction { 
             display: flex; 
-            gap: 20px; 
+            gap: 10px; 
             margin-bottom: 15px; 
             flex-wrap: wrap;
         }
-        .transaction-type label, .exchange-type label { 
+        .transaction-type label, .exchange-type label, .cash-direction label, .exchange-direction label { 
             display: flex; 
             align-items: center; 
             gap: 5px; 
             cursor: pointer; 
         }
-        .payment-options, .exchange-details { 
+        .payment-options, .exchange-details, .cash-payment-details { 
             display: none; 
             margin-top: 15px; 
             padding: 15px; 
@@ -94,13 +94,102 @@
             font-weight: bold; 
             display: none; 
         }
-        .negative-balance { background-color: #ffebee; }
+        .negative-balance { background-color极速: #ffebee; }
         .optional-field { color: #666; font-weight: normal; }
         .error-message { 
             color: #f44336; 
             font-size: 14px; 
             margin-top: 5px; 
             display: none; 
+        }
+        
+        /* Style for radio buttons that look like buttons */
+        .btn-radio {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            min-width: 100px;
+        }
+        input[type="radio"] {
+            display: none;
+        }
+        
+        /* Cash direction buttons */
+        .btn-cash-in {
+            color: #4caf50;
+            border-color: #4caf50;
+        }
+        .btn-cash-out {
+            color: #f44336;
+            border-color: #f44336;
+        }
+        
+        /* Exchange direction buttons */
+        .btn-exchange-buy {
+            color: #4caf50;
+            border-color: #4caf50;
+       }
+        .btn-exchange-sell {
+            color: #f44336;
+            border-color: #f44336;
+        }
+        
+        /* Selected state for all button radios */
+        input[type="radio"]:checked + .btn-radio {
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* Specific selected states */
+        input[type="radio"]:checked + .btn-exchange-buy {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+        input[type="radio"]:checked + .btn-exchange-sell {
+            background: #f44336;
+            border-color: #f44336;
+        }
+        input[type="radio"]:checked + .btn-cash-in {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+        input[type="radio"]:checked + .btn-cash-out {
+            background: #f44336;
+            border-color: #f44336;
+        }
+        
+        /* Regular buttons (not radio style) */
+        .btn-cash-in-btn {
+            background-color: #4caf50;
+            color: white;
+        }
+        .btn-cash-in-btn:hover {
+            background-color: #389f3e;
+        }
+        .btn-cash-out-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-cash-out-btn:hover {
+            background-color: #d32f2f;
+        }
+        .btn-exchange-buy-btn {
+            background-color: #4caf50;
+            color: white;
+        }
+        .btn-exchange-buy-btn:hover {
+            background-color: #45a049;
+        }
+        .btn-exchange-sell-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-exchange-sell-btn:hover {
+            background-color: #d32f2f;
         }
         
         .modal { 
@@ -157,7 +246,7 @@
             width: 250px; 
             background: linear-gradient(to bottom, #2c3e50, #1a2530); 
             color: white; 
-            padding: 20px 0; 
+            padding: 20极速px 0; 
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); 
             display: flex; 
             flex-direction: column; 
@@ -205,7 +294,7 @@
         }
         .nav-links { 
             padding: 20px 0; 
-            flex: 1; 
+            flex极速: 1; 
         }
         .nav-item { 
             padding: 12px 25px; 
@@ -234,7 +323,7 @@
         }
         @media (max-width: 767px) {
             .sidebar { display: none; }
-            .transaction-type, .exchange-type { 
+            .transaction-type, .exchange-type, .cash-direction, .exchange-direction { 
                 flex-direction: column; 
                 gap: 10px; 
             }
@@ -253,19 +342,29 @@
             </button>
         </div>
         
-        <!-- Mobile Menu -->
-        <div class="overlay" id="overlay"></div>
-        <div class="mobile-menu" id="mobile-menu">
-            <div class="menu-header">
-                <button class="menu-close" id="menu-close">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="menu-avatar">
-                    <i class="fas fa-user"></i>
+        <div class="dashboard-container">
+            <!-- Header for Mobile -->
+            <div class="header">
+                <div class="logo">
+                    <h1>KJ GOLD</h1>
                 </div>
-                <h2 id="mobile-username">John Doe</h2>
-                <p>Premium Member</p>
+                <button class="menu-btn" id="mobile-menu-button">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
+            <!-- Mobile Menu -->
+            <div class="overlay" id="overlay"></div>
+            <div class="mobile-menu" id="mobile-menu">
+                <div class="menu-header">
+                    <button class="menu-close" id="menu-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="menu-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 id="mobile-username">John Doe</h2>
+                    <p>Premium Member</p>
+                </div>
             <div class="menu-items">
                 <a href="dashboard.html" class="menu-item active">
                     <i class="fas fa-home"></i>
@@ -279,10 +378,7 @@
                     <i class="fas fa-user-plus"></i>
                     <span>Add Customer</span>
                 </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
+                
                 <a href="#" class="menu-item" id="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
@@ -347,103 +443,178 @@
                             <option value="">-- Select Type --</option>
                             <option value="Kacha">Kacha</option>
                             <option value="Fine Gold">Fine Gold</option>
+                            <option value="Cash Payment">Cash Payment</option>
+                            <option value="Exchange Gold">Exchange Gold</option>
                         </select>
                         <div id="type-error" class="error-message">Please select a type</div>
                     </div>
-                    <!-- Grams Input -->
-                    <div class="form-group">
-                        <label for="grams">Grams *</label>
-                        <input type="number" id="grams" name="grams" step="0.01" placeholder="Enter grams" required>
-                        <div id="grams-error" class="error-message">Please enter valid grams</div>
-                    </div>
-                    <!-- Touch Input -->
-                    <div class="form-group">
-                        <label for="touch">Touch (%) <span id="touch-required">*</span></label>
-                        <input type="number" id="touch" name="touch" step="0.01" placeholder="Enter touch %" required>
-                    </div>
-                    <!-- Rate Input -->
-                    <div class="form-group">
-                        <label for="rate">Rate (per gram) *</label>
-                        <input type="number" id="rate" name="rate" step="0.01" placeholder="Enter rate" required>
-                        <div id="rate-error" class="error-message">Please enter valid rate</div>
-                    </div>
-                    <!-- Total Amount -->
-                    <div class="form-group">
-                        <label for="total">Total Amount</label>
-                        <input type="text" id="total" name="total" readonly>
-                    </div>
-                    <!-- Transaction Type (Buy/Sell) -->
-                    <div class="form-group">
-                        <label>Transaction Type *</label>
-                        <div class="transaction-type">
-                            <label>
-                                <input type="radio" name="transaction-type" value="buy" required> Buy
-                            </label>
-                            <label>
-                                <input type="radio" name="transaction-type" value="sell" required> Sell
-                            </label>
+                    
+                    <!-- Gold Transaction Fields (Kacha/Fine Gold) -->
+                    <div id="gold-details">
+                        <!-- Grams Input -->
+                        <div class="form-group">
+                            <label for="grams">Grams *</label>
+                            <input type="number" id="grams" name="grams" step="0.01" placeholder="Enter grams">
+                            <div id="grams-error" class="error-message">Please enter valid grams</div>
                         </div>
-                        <div id="transaction-type-error" class="error-message">Please select transaction type</div>
-                    </div>
-                    <!-- Payment Options -->
-                    <div id="payment-options" class="payment-options">
-                        <h3>Payment Method</h3>
-                        <div class="transaction-type">
-                            <label>
-                                <input type="radio" name="payment-method" value="cash"> Cash
-                            </label>
-                            <label>
-                                <input type="radio" name="payment-method" value="exchange"> Exchange Gold
-                            </label>
+                        <!-- Touch Input -->
+                        <div class="form-group">
+                            <label for="touch">Touch (%) <span id="touch-required">*</span></label>
+                            <input type="number" id="touch" name="touch" step="0.01" placeholder="Enter touch %">
                         </div>
-                        <div id="payment-method-error" class="error-message">Please select payment method</div>
-                        <!-- Cash Payment Details -->
-                        <div id="cash-details" style="display: none; margin-top: 15px;">
-                            <div class="form-group">
-                                <label for="cash-given">Amount Given *</label>
-                                <input type="number" id="cash-given" name="cash-given" step="0.01" placeholder="Enter amount given">
-                                <div id="cash-given-error" class="error-message">Please enter cash amount</div>
+                        <!-- Rate Input -->
+                        <div class="form-group">
+                            <label for="rate">Rate (per gram) *</label>
+                            <input type="number" id="rate" name="rate" step="0.01" placeholder="Enter rate">
+                            <div id="rate-error" class="error-message">Please enter valid rate</div>
+                        </div>
+                        <!-- Total Amount -->
+                        <div class="form-group">
+                            <label for="total">Total Amount</label>
+                            <input type="text" id="total" name="total" readonly>
+                        </div>
+                        <!-- Transaction Type (Buy/Sell) -->
+                        <div class="form-group">
+                            <label>Transaction Type *</label>
+                            <div class="transaction-type">
+                                <label>
+                                    <input type="radio" name="transaction-type" value="buy"> 
+                                    <span class="btn-radio btn-exchange-buy">Buy</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="transaction-type" value="sell"> 
+                                    <span class="btn-radio btn-exchange-sell">Sell</span>
+                                </label>
                             </div>
-                            <div id="balance-display" class="balance-display">
-                                Balance: ₹0.00
-                            </div>
+                            <div id="transaction-type-error" class="error-message">Please select transaction type</div>
                         </div>
-                        <!-- Exchange Gold Details -->
-                        <div id="exchange-details" class="exchange-details">
-                            <h4>Exchange Gold Details</h4>
-                            <div class="form-group">
-                                <label>Exchange Type *</label>
-                                <div class="exchange-type">
-                                    <label>
-                                        <input type="radio" name="exchange-type" value="Kacha"> Kacha
-                                    </label>
-                                    <label>
-                                        <input type="radio" name="exchange-type" value="Fine Gold"> Fine Gold
-                                    </label>
+                        <!-- Payment Options -->
+                        <div id="payment-options" class="payment-options">
+                            <h3>Payment Method</h3>
+                            <div class="transaction-type">
+                                <label>
+                                    <input type="radio" name="payment-method" value="cash"> 
+                                    <span class="btn-radio">Cash</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="payment-method" value="exchange"> 
+                                    <span class="btn-radio">Exchange Gold</span>
+                                </label>
+                            </div>
+                            <div id="payment-method-error" class="error-message">Please select payment method</div>
+                            <!-- Cash Payment Details -->
+                            <div id="cash-details" style="display: none; margin-top: 15px;">
+                                <div class="form-group">
+                                    <label for="cash-given">Amount Given *</label>
+                                    <input type="number" id="cash-given" name="cash-given" step="0.01" placeholder="Enter amount given">
+                                    <div id="cash-given-error" class="error-message">Please enter cash amount</div>
                                 </div>
-                                <div id="exchange-type-error" class="error-message">Please select exchange type</div>
+                                <div id="balance-display" class="balance-display">
+                                    Balance: ₹0.00
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="exchange-grams">Gold Weight (grams) *</label>
-                                <input type="number" id="exchange-grams" name="exchange-grams" step="0.01" placeholder="Enter grams">
-                                <div id="exchange-grams-error" class="error-message">Please enter valid grams</div>
+                            <!-- Exchange Gold Details -->
+                            <div id="exchange-details" class="exchange-details">
+                                <h4>Exchange Gold Details</h4>
+                                <div class="form-group">
+                                    <label>Exchange Type *</label>
+                                    <div class="exchange-type">
+                                        <label>
+                                            <input type="radio" name="exchange-type" value="Kacha"> 
+                                            <span class="btn-radio">Kacha</span>
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="exchange-type" value="Fine Gold"> 
+                                            <span class="btn-radio">Fine Gold</span>
+                                        </label>
+                                    </div>
+                                    <div id="exchange-type-error" class="error-message">Please select exchange type</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exchange-grams">Gold Weight (grams) *</label>
+                                    <input type="number" id="exchange-grams" name="exchange-grams" step="0.01" placeholder="Enter grams">
+                                    <div id="exchange-grams-error" class="error-message">Please enter valid grams</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exchange-touch">Touch (%) <span id="exchange-touch-required">(optional)</span></label>
+                                    <input type="number" id="exchange-touch" name="exchange-touch" step="0.01" placeholder="Enter touch % (optional)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exchange-rate">Rate (per gram) <span>(optional)</span></label>
+                                    <input type="number极速" id="exchange-rate" name="exchange-rate" step="0.01" placeholder="Enter rate (optional)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exchange-total">Exchange Value</label>
+                                    <input type="text" id="exchange-total" name="exchange-total" readonly>
+                                </div>
+                                <div id="exchange-balance" class="balance-display">
+                                    Balance: ₹0.00
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="exchange-touch">Touch (%) <span id="exchange-touch-required">*</span></label>
-                                <input type="number" id="exchange-touch" name="exchange-touch" step="0.01" placeholder="Enter touch %">
+                        </div>
+                    </div>
+                    
+                    <!-- Cash Payment Fields -->
+                    <div id="cash-payment-details" class="cash-payment-details">
+                        <div class="form-group">
+                            <label for="cash-amount">Cash Amount *</label>
+                            <input type="number" id="cash-amount" name="cash-amount" step极速="0.01" placeholder="Enter cash amount">
+                            <div id="cash-amount-error" class="error-message">Please enter cash amount</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Cash Direction *</label>
+                            <div class="cash-direction">
+                                <label>
+                                    <input type="radio" name="cash-direction" value="in"> 
+                                    <span class="btn-radio btn-cash-in">Cash In</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="cash-direction" value="out"> 
+                                    <span class="btn-radio btn-cash-out">Cash Out极速</span>
+                                </label>
                             </div>
-                            <div class="form-group">
-                                <label for="exchange-rate">Rate (per gram) *</label>
-                                <input type="number" id="exchange-rate" name="exchange-rate" step="0.01" placeholder="Enter rate">
-                                <div id="exchange-rate-error" class="error-message">Please enter valid rate</div>
+                            <div id="cash-direction-error" class="error-message">Please select cash direction</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Exchange Gold Fields -->
+                    <div id="exchange-gold-details" class="exchange-details">
+                        <div class="form-group">
+                            <label>Exchange Type *</label>
+                            <div class="exchange-type">
+                                <label>
+                                    <input type="radio" name="exchange-gold-type" value="Kacha"> 
+                                    <span class="btn-radio">Kacha</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="exchange-gold-type" value="Fine Gold"> 
+                                    <span class="btn-radio">Fine Gold</span>
+                                </label>
                             </div>
-                            <div class="form-group">
-                                <label for="exchange-total">Exchange Value</label>
-                                <input type="text" id="exchange-total" name="exchange-total" readonly>
+                            <div id="exchange-gold-type-error" class="error-message">Please select exchange type</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Exchange Direction *</label>
+                            <div class="exchange-direction">
+                                <label>
+                                    <input type="radio" name="exchange-gold-direction" value="buy"> 
+                                    <span class="btn-radio btn-exchange-buy">Buy</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="exchange-gold-direction" value="sell"> 
+                                    <span class="btn-radio btn-exchange-sell">Sell</span>
+                                </label>
                             </div>
-                            <div id="exchange-balance" class="balance-display">
-                                Balance: ₹0.00
-                            </div>
+                            <div id="exchange-gold-direction-error" class="error-message">Please select exchange direction</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="exchange-gold-grams">Gold Weight (grams) *</label>
+                            <input type="number" id="exchange-gold-grams" name="exchange-gold-grams" step="0.01" placeholder="Enter grams">
+                            <div id="exchange-gold-grams-error" class="error-message">Please enter valid grams</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="exchange-gold-touch">Touch (%) <span>(optional)</span></label>
+                            <input type="number" id="exchange-gold-touch" name="exchange-gold-touch" step="0.01" placeholder="Enter touch % (optional)">
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Save Entry</button>
@@ -466,7 +637,7 @@
                 </div>
                 <div class="form-group">
                     <label for="customer-phone">Mobile Number *</label>
-                    <input type="tel" id="customer-phone" name="customer-phone" placeholder="Enter mobile number" required>
+                    <input type="tel" id="customer-phone" placeholder="Enter mobile number" required>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">
                     <i class="fas fa-save"></i> Save Customer
@@ -474,376 +645,7 @@
             </form>
         </div>
     </div>
-    
-    <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAop6R33GJrzzl9WMyhQ1xQwYvJp4AHRIw",
-            authDomain: "kjgold-1ded4.firebaseapp.com",
-            projectId: "kjgold-1ded4",
-            storageBucket: "kjgold-1ded4.firebasestorage.app",
-            messagingSenderId: "547004315734",
-            appId: "1:547004315734:web:fed5dc819e42f5597d23f7",
-            measurementId: "G-B47GQ3ND0L"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        auth.onAuthStateChanged((user) => {
-            if (!user) {
-                window.location.href = 'index.html';
-            } else {
-                loadUserData(user.uid);
-                loadCustomers();
-            }
-        });
-
-        function loadUserData(userId) {
-            db.collection('users').doc(userId).get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        const userData = doc.data();
-                        document.getElementById('mobile-username').textContent = userData.username;
-                        document.getElementById('desktop-username').textContent = userData.username;
-                        document.getElementById('username-display').textContent = `Welcome, ${userData.username}`;
-                    }
-                })
-                .catch((error) => console.error("Error getting user document:", error));
-        }
-
-        function loadCustomers() {
-            const customerSelect = document.getElementById('customer-select');
-            customerSelect.innerHTML = '<option value="">-- Select Customer --</option>';
-            db.collection('customers').where("userId", "==", auth.currentUser.uid).get()
-                .then(snapshot => {
-                    snapshot.forEach(doc => {
-                        const customer = doc.data();
-                        const option = document.createElement('option');
-                        option.value = doc.id;
-                        option.textContent = customer.name + " (" + customer.phone + ")";
-                        customerSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error("Error fetching customers:", error));
-        }
-
-        function setExchangeTouchRequired(isRequired) {
-            const exchangeTouchInput = document.getElementById('exchange-touch');
-            if (isRequired) exchangeTouchInput.setAttribute('required', 'true');
-            else exchangeTouchInput.removeAttribute('required');
-        }
-
-        function calculateTotal() {
-            const type = document.getElementById('type-select').value;
-            const grams = parseFloat(document.getElementById('grams').value) || 0;
-            const touch = parseFloat(document.getElementById('touch').value) || 0;
-            const rate = parseFloat(document.getElementById('rate').value) || 0;
-            let total;
-            if (type === 'Fine Gold') total = grams * rate;
-            else total = (grams * rate * (touch || 100)) / 100;
-            document.getElementById('total').value = total.toFixed(2);
-            updateCashBalance();
-            calculateExchangeTotal();
-        }
-
-        function calculateExchangeTotal() {
-            const exchangeType = document.querySelector('input[name="exchange-type"]:checked');
-            const grams = parseFloat(document.getElementById('exchange-grams').value) || 0;
-            const touch = parseFloat(document.getElementById('exchange-touch').value) || 0;
-            const rate = parseFloat(document.getElementById('exchange-rate').value) || 0;
-            let total = 0;
-            if (exchangeType) {
-                if (exchangeType.value === 'Fine Gold') total = grams * rate;
-                else total = (grams * rate * (touch || 100)) / 100;
-            }
-            document.getElementById('exchange-total').value = total.toFixed(2);
-            updateExchangeBalance();
-        }
-
-        function updateCashBalance() {
-            const totalAmount = parseFloat(document.getElementById('total').value) || 0;
-            const cashGiven = parseFloat(document.getElementById('cash-given').value) || 0;
-            const balance = cashGiven - totalAmount;
-            const balanceDisplay = document.getElementById('balance-display');
-            if (balanceDisplay) {
-                balanceDisplay.textContent = `Balance: ₹${balance.toFixed(2)}`;
-                balanceDisplay.style.display = 'block';
-                if (balance < 0) balanceDisplay.classList.add('negative-balance');
-                else balanceDisplay.classList.remove('negative-balance');
-            }
-        }
-
-        function updateExchangeBalance() {
-            const totalAmount = parseFloat(document.getElementById('total').value) || 0;
-            const exchangeValue = parseFloat(document.getElementById('exchange-total').value) || 0;
-            const balance = exchangeValue - totalAmount;
-            const balanceDisplay = document.getElementById('exchange-balance');
-            if (balanceDisplay) {
-                balanceDisplay.textContent = `Balance: ₹${balance.toFixed(2)}`;
-                balanceDisplay.style.display = 'block';
-                if (balance < 0) balanceDisplay.classList.add('negative-balance');
-                else balanceDisplay.classList.remove('negative-balance');
-            }
-        }
-
-        document.getElementById('type-select').addEventListener('change', function() {
-            const touchRequired = document.getElementById('touch-required');
-            const touchInput = document.getElementById('touch');
-            if (this.value === 'Fine Gold') {
-                touchRequired.classList.add('optional-field');
-                touchRequired.textContent = '(optional)';
-                touchInput.removeAttribute('required');
-                touchInput.placeholder = 'Enter touch % (optional)';
-            } else {
-                touchRequired.classList.remove('optional-field');
-                touchRequired.textContent = '*';
-                touchInput.setAttribute('required', 'true');
-                touchInput.placeholder = 'Enter touch %';
-            }
-            calculateTotal();
-        });
-
-        document.querySelectorAll('input[name="exchange-type"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                const exchangeTouchRequired = document.getElementById('exchange-touch-required');
-                const exchangeTouchInput = document.getElementById('exchange-touch');
-                if (this.value === 'Fine Gold') {
-                    exchangeTouchRequired.classList.add('optional-field');
-                    exchangeTouchRequired.textContent = '(optional)';
-                    exchangeTouchInput.removeAttribute('required');
-                    exchangeTouchInput.placeholder = 'Enter touch % (optional)';
-                } else {
-                    exchangeTouchRequired.classList.remove('optional-field');
-                    exchangeTouchRequired.textContent = '*';
-                    exchangeTouchInput.setAttribute('required', 'true');
-                    exchangeTouchInput.placeholder = 'Enter touch %';
-                }
-                calculateExchangeTotal();
-            });
-        });
-
-        document.getElementById('mobile-menu-button').addEventListener('click', () => {
-            document.getElementById('mobile-menu').classList.add('show');
-            document.getElementById('overlay').classList.add('show');
-        });
-        document.getElementById('menu-close').addEventListener('click', () => {
-            document.getElementById('mobile-menu').classList.remove('show');
-            document.getElementById('overlay').classList.remove('show');
-        });
-        document.getElementById('overlay').addEventListener('click', function() {
-            document.getElementById('mobile-menu').classList.remove('show');
-            this.classList.remove('show');
-        });
-
-        document.getElementById('add-customer-sidebar').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('customer-modal').classList.add('show');
-        });
-        document.getElementById('mobile-add-customer').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('customer-modal').classList.add('show');
-            document.getElementById('mobile-menu').classList.remove('show');
-            document.getElementById('overlay').classList.remove('show');
-        });
-        document.getElementById('close-modal').addEventListener('click', function() {
-            document.getElementById('customer-modal').classList.remove('show');
-        });
-        window.addEventListener('click', function(event) {
-            if (event.target.matches('#customer-modal')) {
-                document.getElementById('customer-modal').classList.remove('show');
-            }
-        });
-
-        document.getElementById('customer-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('customer-name').value;
-            const phone = document.getElementById('customer-phone').value;
-            if (name && phone) {
-                db.collection('customers').add({
-                    name,
-                    phone,
-                    userId: auth.currentUser.uid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    alert("Customer added successfully!");
-                    document.getElementById('customer-modal').classList.remove('show');
-                    this.reset();
-                    loadCustomers();
-                }).catch(err => {
-                    console.error("Error adding customer: ", err);
-                    alert("Error adding customer.");
-                });
-            }
-        });
-
-        document.getElementById('logout-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            auth.signOut().then(() => window.location.href = 'index.html');
-        });
-        document.getElementById('logout-btn-desktop').addEventListener('click', (e) => {
-            e.preventDefault();
-            auth.signOut().then(() => window.location.href = 'index.html');
-        });
-
-        document.querySelectorAll('input[name="transaction-type"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                const paymentOptions = document.getElementById('payment-options');
-                paymentOptions.style.display = (this.value === 'buy' || this.value === 'sell') ? 'block' : 'none';
-                document.getElementById('cash-details').style.display = 'none';
-                document.getElementById('exchange-details').style.display = 'none';
-                setExchangeTouchRequired(false);
-            });
-        });
-
-        document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                const cashDetails = document.getElementById('cash-details');
-                const exchangeDetails = document.getElementById('exchange-details');
-                if (this.value === 'cash') {
-                    cashDetails.style.display = 'block';
-                    exchangeDetails.style.display = 'none';
-                    setExchangeTouchRequired(false);
-                } else if (this.value === 'exchange') {
-                    cashDetails.style.display = 'none';
-                    exchangeDetails.style.display = 'block';
-                    setExchangeTouchRequired(true);
-                }
-            });
-        });
-
-        ['grams', 'touch', 'rate'].forEach(id => {
-            document.getElementById(id).addEventListener('input', calculateTotal);
-        });
-        ['exchange-grams', 'exchange-touch', 'exchange-rate'].forEach(id => {
-            document.getElementById(id).addEventListener('input', calculateExchangeTotal);
-        });
-        document.getElementById('cash-given').addEventListener('input', updateCashBalance);
-
-        document.getElementById('transaction-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            document.querySelectorAll('.error-message').forEach(el => {
-                el.style.display = 'none';
-            });
-            let isValid = true;
-            const customerId = document.getElementById('customer-select').value;
-            const type = document.getElementById('type-select').value;
-            const grams = parseFloat(document.getElementById('grams').value);
-            const touch = parseFloat(document.getElementById('touch').value) || 0;
-            const rate = parseFloat(document.getElementById('rate').value);
-            const total = parseFloat(document.getElementById('total').value);
-            const transactionType = document.querySelector('input[name="transaction-type"]:checked');
-            if (!customerId) {
-                document.getElementById('customer-error').style.display = 'block';
-                isValid = false;
-            }
-            if (!type) {
-                document.getElementById('type-error').style.display = 'block';
-                isValid = false;
-            }
-            if (isNaN(grams) || grams <= 0) {
-                document.getElementById('grams-error').style.display = 'block';
-                isValid = false;
-            }
-            if (isNaN(rate) || rate <= 0) {
-                document.getElementById('rate-error').style.display = 'block';
-                isValid = false;
-            }
-            if (!transactionType) {
-                document.getElementById('transaction-type-error').style.display = 'block';
-                isValid = false;
-            }
-            if (!isValid) return;
-
-            let paymentMethod = null;
-            let cashGiven = null;
-            let exchangeGrams = null;
-            let exchangeTouch = null;
-            let exchangeRate = null;
-            let exchangeTotal = null;
-            let exchangeType = null;
-            let balance = null;
-            // FOR BOTH BUY AND SELL
-            const paymentMethodElement = document.querySelector('input[name="payment-method"]:checked');
-            if (!paymentMethodElement) {
-                document.getElementById('payment-method-error').style.display = 'block';
-                isValid = false;
-            } else {
-                paymentMethod = paymentMethodElement.value;
-                if (paymentMethod === 'cash') {
-                    cashGiven = parseFloat(document.getElementById('cash-given').value);
-                    if (isNaN(cashGiven) || cashGiven <= 0) {
-                        document.getElementById('cash-given-error').style.display = 'block';
-                        isValid = false;
-                    } else {
-                        balance = cashGiven - total;
-                    }
-                } else if (paymentMethod === 'exchange') {
-                    exchangeType = document.querySelector('input[name="exchange-type"]:checked');
-                    if (!exchangeType) {
-                        document.getElementById('exchange-type-error').style.display = 'block';
-                        isValid = false;
-                    } else {
-                        exchangeType = exchangeType.value;
-                        exchangeGrams = parseFloat(document.getElementById('exchange-grams').value) || 0;
-                        exchangeTouch = parseFloat(document.getElementById('exchange-touch').value) || 0;
-                        exchangeRate = parseFloat(document.getElementById('exchange-rate').value) || 0;
-                        if (isNaN(exchangeGrams) || exchangeGrams <= 0) {
-                            document.getElementById('exchange-grams-error').style.display = 'block';
-                            isValid = false;
-                        }
-                        if (isNaN(exchangeRate) || exchangeRate <= 0) {
-                            document.getElementById('exchange-rate-error').style.display = 'block';
-                            isValid = false;
-                        }
-                        if (isValid) {
-                            exchangeTotal = parseFloat(document.getElementById('exchange-total').value) || 0;
-                            balance = exchangeTotal - total;
-                        }
-                    }
-                }
-            }
-            if (!isValid) return;
-
-            const transactionData = {
-                customerId,
-                type,
-                grams,
-                touch,
-                rate,
-                total,
-                transactionType: transactionType.value, // buy or sell
-                paymentMethod,
-                cashGiven,
-                exchangeType,
-                exchangeGrams,
-                exchangeTouch,
-                exchangeRate,
-                exchangeTotal,
-                balance,
-                userId: auth.currentUser.uid,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            db.collection('transactions').add(transactionData)
-                .then((docRef) => {
-                    alert("Transaction saved successfully!");
-                    this.reset();
-                    document.getElementById('total').value = "";
-                    document.getElementById('payment-options').style.display = 'none';
-                    document.getElementById('cash-details').style.display = 'none';
-                    document.getElementById('exchange-details').style.display = 'none';
-                    document.querySelectorAll('.balance-display').forEach(el => {
-                        el.style.display = 'none';
-                    });
-                    setExchangeTouchRequired(false);
-                })
-                .catch(err => {
-                    alert("Error saving transaction: " + err.message);
-                });
-        });
-    </script>
+    <!-- External JavaScript file -->
+    <script src="dashboard.js"></script>
 </body>
 </html>
-
