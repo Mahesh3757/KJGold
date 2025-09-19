@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
             handleGoldTransaction(type, grams, rate, transactionType.value, customerId);
             
         } else if (type === 'Cash Payment') {
-            const cashAmount = parseFloat(document.getElementById('cash-amount').value);
+               const cashAmount = parseFloat(document.getElementById('cash-amount').value);
             const cashDirection = document.querySelector('input[name="cash-direction"]:checked');
             
             if (isNaN(cashAmount) || cashAmount <= 0) {
@@ -405,78 +405,27 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function handleGoldTransaction(type, grams, rate, transactionType, customerId) {
-    const touch = parseFloat(document.getElementById('touch').value) || 0;
-    const total = parseFloat(document.getElementById('total').value);
+function handleExchangeTransaction(exchangeGrams, exchangeType, customerId) {
+    const exchangeTouch = parseFloat(document.getElementById('exchange-gold-touch').value) || 0;
     
-    let paymentMethod = null;
-    let cashGiven = null;
-    let exchangeGrams = null;
-    let exchangeTouch = null;
-    let exchangeRate = null;
-    let exchangeTotal = null;
-    let exchangeType = null;
-    let balance = null;
-    
-    // FOR BOTH BUY AND SELL
-    const paymentMethodElement = document.querySelector('input[name="payment-method"]:checked');
-    if (!paymentMethodElement) {
-        document.getElementById('payment-method-error').style.display = 'block';
+    // GET THE EXCHANGE DIRECTION FROM THE FORM
+    const exchangeGoldDirection = document.querySelector('input[name="exchange-gold-direction"]:checked');
+    if (!exchangeGoldDirection) {
+        document.getElementById('exchange-gold-direction-error').style.display = 'block';
         return;
-    } else {
-        paymentMethod = paymentMethodElement.value;
-        if (paymentMethod === 'cash') {
-            cashGiven = parseFloat(document.getElementById('cash-given').value);
-            if (isNaN(cashGiven) || cashGiven <= 0) {
-                document.getElementById('cash-given-error').style.display = 'block';
-                return;
-            } else {
-                balance = cashGiven - total;
-            }
-        } else if (paymentMethod === 'exchange') {
-            exchangeType = document.querySelector('input[name="exchange-type"]:checked');
-            if (!exchangeType) {
-                document.getElementById('exchange-type-error').style.display = 'block';
-                return;
-            } else {
-                exchangeType = exchangeType.value;
-                exchangeGrams = parseFloat(document.getElementById('exchange-grams').value) || 0;
-                exchangeTouch = parseFloat(document.getElementById('exchange-touch').value) || 0;
-                exchangeRate = parseFloat(document.getElementById('exchange-rate').value) || 0;
-                if (isNaN(exchangeGrams) || exchangeGrams <= 0) {
-                    document.getElementById('exchange-grams-error').style.display = 'block';
-                    return;
-                }
-                if (isNaN(exchangeRate) || exchangeRate <= 0) {
-                    document.getElementById('exchange-rate-error').style.display = 'block';
-                    return;
-                }
-                exchangeTotal = parseFloat(document.getElementById('exchange-total').value) || 0;
-                balance = exchangeTotal - total;
-            }
-        }
     }
-
+    
     const transactionData = {
         customerId,
-        type,
-        grams,
-        touch,
-        rate,
-        total,
-        transactionType,
-        paymentMethod,
-        cashGiven,
-        exchangeType,
+        type: 'Exchange Gold',
         exchangeGrams,
+        exchangeType,
         exchangeTouch,
-        exchangeRate,
-        exchangeTotal,
-        balance,
+        exchangeGoldDirection: exchangeGoldDirection.value, // ADD THIS LINE
         userId: auth.currentUser.uid,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-
+    
     saveTransaction(transactionData);
 }
 
@@ -504,21 +453,6 @@ function handleCashTransaction(cashAmount, cashDirection, customerId) {
     saveTransaction(transactionData);
 }
 
-function handleExchangeTransaction(exchangeGrams, exchangeType, customerId) {
-    const exchangeTouch = parseFloat(document.getElementById('exchange-gold-touch').value) || 0;
-    
-    const transactionData = {
-        customerId,
-        type: 'Exchange Gold',
-        exchangeGrams,
-        exchangeType,
-        exchangeTouch,
-        userId: auth.currentUser.uid,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    
-    saveTransaction(transactionData);
-}
 
 function saveTransaction(transactionData) {
     console.log("Saving transaction to Firestore:", transactionData);
