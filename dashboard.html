@@ -16,10 +16,10 @@
         .header { background: linear-gradient(to right, #2c3e50, #1a2530); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
         .logo h1 { font-size: 20px; color: #d4af37; font-weight: 700; }
         .menu-btn { background: transparent; color: white; border: none; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
-        .mobile-menu { position: fixed; top: 0; right: -100%; width: 80%; height: 100%; background: white; z-index: 1000; transition: right 0.3s ease; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; }
+        .mobile-menu { position: fixed; top: 0; right: -100%; width: 80%; height: 100%; background: white; z-index: 1000; transition: right 极速0.3s ease; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; }
         .mobile-menu.show { right: 0; }
         .menu-header { background: linear-gradient(to right, #2c3e50, #1a2530); padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .menu-avatar { width: 70px; height: 70px; border-radius: 50%; background: #d4af37; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; margin-bottom: 15px; }
+        .menu-avatar { width: 70px; height: 70px; border-radius: 50%; background: #d4af37; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; margin-bottom: 15极速px; }
         .menu-header h2 { font-size: 18px; margin-bottom: 5px; color: white; }
         .menu-header p { font-size: 14px; color: #b8c2cc; }
         .menu-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
@@ -41,7 +41,7 @@
         .btn { padding: 10px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; }
         .btn-primary { background: #d4af37; color: white; }
         .btn-primary:hover { background: #c29a2a; }
-        .btn i { margin-right: 8px; }
+        .btn i极速 { margin-right: 8px; }
         
         .form-group {
             margin-bottom: 20px;
@@ -94,7 +94,7 @@
             font-weight: bold; 
             display: none; 
         }
-        .negative-balance { background-color极速: #ffebee; }
+        .negative-balance { background-color: #ffebee; }
         .optional-field { color: #666; font-weight: normal; }
         .error-message { 
             color: #f44336; 
@@ -138,6 +138,12 @@
             border-color: #f44336;
         }
         
+        /* Regular radio buttons (not directional) */
+        .btn-radio-default {
+            color: #2c3e50;
+            border-color: #ddd;
+        }
+        
         /* Selected state for all button radios */
         input[type="radio"]:checked + .btn-radio {
             color: white;
@@ -152,7 +158,7 @@
         input[type="radio"]:checked + .btn-exchange-sell {
             background: #f44336;
             border-color: #f44336;
-        }
+       }
         input[type="radio"]:checked + .btn-cash-in {
             background: #4caf50;
             border-color: #4caf50;
@@ -160,6 +166,12 @@
         input[type="radio"]:checked + .btn-cash-out {
             background: #f44336;
             border-color: #f44336;
+        }
+        /* For regular radio buttons (not directional) */
+        input[type="radio"]:checked + .btn-radio-default {
+            background: #d4af37;
+            border-color: #d4af37;
+            color: white;
         }
         
         /* Regular buttons (not radio style) */
@@ -246,17 +258,17 @@
             width: 250px; 
             background: linear-gradient(to bottom, #2c3e50, #1a2530); 
             color: white; 
-            padding: 20极速px 0; 
+            padding: 20px 0; 
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); 
             display: flex; 
             flex-direction: column; 
         }
         .sidebar .logo { 
             text-align: center; 
-            padding: 20px 0; 
+            padding: 20px 极速0; 
             border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
         }
-        .sidebar .logo h1 { 
+        .sidebar .极速logo h1 { 
             font-size: 24px; 
             color: #d4af37;
         }
@@ -294,7 +306,7 @@
         }
         .nav-links { 
             padding: 20px 0; 
-            flex极速: 1; 
+            flex: 1; 
         }
         .nav-item { 
             padding: 12px 25px; 
@@ -312,6 +324,11 @@
         .nav-item i { 
             margin-right: 15px; 
             font-size: 18px; 
+        }
+        
+        /* Gold Purity Field */
+        .gold-purity-field {
+            display: none;
         }
         
         @media (min-width: 768px) {
@@ -342,29 +359,19 @@
             </button>
         </div>
         
-        <div class="dashboard-container">
-            <!-- Header for Mobile -->
-            <!-- <div class="header">
-                <div class="logo">
-                    <h1>KJ GOLD</h1>
-                </div>
-                <button class="menu-btn" id="mobile-menu-button">
-                    <i class="fas fa-bars"></i>
+        <!-- Mobile Menu -->
+        <div class="overlay" id="overlay"></div>
+        <div class="mobile-menu" id="mobile-menu">
+            <div class="menu-header">
+                <button class="menu-close" id="menu-close">
+                    <i class="fas fa-times"></i>
                 </button>
-            </div> -->
-            <!-- Mobile Menu -->
-            <div class="overlay" id="overlay"></div>
-            <div class="mobile-menu" id="mobile-menu">
-                <div class="menu-header">
-                    <button class="menu-close" id="menu-close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="menu-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h2 id="mobile-username">John Doe</h2>
-                    <p>Premium Member</p>
+                <div class="menu-avatar">
+                    <i class="fas fa-user"></i>
                 </div>
+                <h2 id="mobile-username">John Doe</h2>
+                <p>Premium Member</p>
+            </div>
             <div class="menu-items">
                 <a href="dashboard.html" class="menu-item active">
                     <i class="fas fa-home"></i>
@@ -378,7 +385,6 @@
                     <i class="fas fa-user-plus"></i>
                     <span>Add Customer</span>
                 </a>
-                
                 <a href="#" class="menu-item" id="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
@@ -424,9 +430,16 @@
         
         <!-- Main Content -->
         <div class="main-content">
-            
+            <div class="welcome-section">
+                <h2>Welcome to KJ GOLD Dashboard</h2>
+                <p>Manage your gold transactions and customers efficiently</p>
+                <div class="username-display" id="username-display">Welcome, User</div>
+            </div>
             
             <div class="card">
+                <div class="card-header">
+                    <h3>New Transaction</h3>
+                </div>
                 <form id="transaction-form" autocomplete="off">
                     <!-- Customers Dropdown -->
                     <div class="form-group">
@@ -434,7 +447,6 @@
                         <select id="customer-select" required>
                             <option value="">-- Select Customer --</option>
                         </select>
-                        <div id="customer-error" class="error-message">Please select a customer</div>
                     </div>
                     <!-- Types Dropdown -->
                     <div class="form-group">
@@ -446,7 +458,6 @@
                             <option value="Cash Payment">Cash Payment</option>
                             <option value="Exchange Gold">Exchange Gold</option>
                         </select>
-                        <div id="type-error" class="error-message">Please select a type</div>
                     </div>
                     
                     <!-- Gold Transaction Fields (Kacha/Fine Gold) -->
@@ -455,18 +466,21 @@
                         <div class="form-group">
                             <label for="grams">Grams *</label>
                             <input type="number" id="grams" name="grams" step="0.01" placeholder="Enter grams">
-                            <div id="grams-error" class="error-message">Please enter valid grams</div>
                         </div>
                         <!-- Touch Input -->
                         <div class="form-group">
                             <label for="touch">Touch (%) <span id="touch-required">*</span></label>
                             <input type="number" id="touch" name="touch" step="0.01" placeholder="Enter touch %">
                         </div>
+                        <!-- Pure Gold Display -->
+                        <div class="form-group gold-purity-field" id="pure-gold-field">
+                            <label for="pure-gold">Pure Gold (grams)</label>
+                            <input type="number" id="pure-gold" name="pure-gold" step="0.01" placeholder="Calculated pure gold grams" readonly>
+                        </div>
                         <!-- Rate Input -->
                         <div class="form-group">
                             <label for="rate">Rate (per gram) *</label>
                             <input type="number" id="rate" name="rate" step="0.01" placeholder="Enter rate">
-                            <div id="rate-error" class="error-message">Please enter valid rate</div>
                         </div>
                         <!-- Total Amount -->
                         <div class="form-group">
@@ -486,7 +500,6 @@
                                     <span class="btn-radio btn-exchange-sell">Sell</span>
                                 </label>
                             </div>
-                            <div id="transaction-type-error" class="error-message">Please select transaction type</div>
                         </div>
                         <!-- Payment Options -->
                         <div id="payment-options" class="payment-options">
@@ -494,11 +507,11 @@
                             <div class="transaction-type">
                                 <label>
                                     <input type="radio" name="payment-method" value="cash"> 
-                                    <span class="btn-radio">Cash</span>
+                                    <span class="btn-radio btn-radio-default">Cash</span>
                                 </label>
                                 <label>
                                     <input type="radio" name="payment-method" value="exchange"> 
-                                    <span class="btn-radio">Exchange Gold</span>
+                                    <span class="btn-radio btn-radio-default">Exchange Gold</span>
                                 </label>
                             </div>
                             <div id="payment-method-error" class="error-message">Please select payment method</div>
@@ -521,11 +534,11 @@
                                     <div class="exchange-type">
                                         <label>
                                             <input type="radio" name="exchange-type" value="Kacha"> 
-                                            <span class="btn-radio">Kacha</span>
+                                            <span class="btn-radio btn-radio-default">Kacha</span>
                                         </label>
                                         <label>
                                             <input type="radio" name="exchange-type" value="Fine Gold"> 
-                                            <span class="btn-radio">Fine Gold</span>
+                                            <span class="btn-radio btn-radio-default">Fine Gold</span>
                                         </label>
                                     </div>
                                     <div id="exchange-type-error" class="error-message">Please select exchange type</div>
@@ -539,9 +552,14 @@
                                     <label for="exchange-touch">Touch (%) <span id="exchange-touch-required">(optional)</span></label>
                                     <input type="number" id="exchange-touch" name="exchange-touch" step="0.01" placeholder="Enter touch % (optional)">
                                 </div>
+                                <!-- Pure Gold Field -->
+                                <div class="form-group gold-purity-field" id="exchange-pure-gold-field">
+                                    <label for="exchange-pure-gold">Pure Gold (grams)</label>
+                                    <input type="number" id="exchange-pure-gold" name="exchange-pure-gold" step="0.01" placeholder="Calculated pure gold grams" readonly>
+                                </div>
                                 <div class="form-group">
                                     <label for="exchange-rate">Rate (per gram) <span>(optional)</span></label>
-                                    <input type="number极速" id="exchange-rate" name="exchange-rate" step="0.01" placeholder="Enter rate (optional)">
+                                    <input type="number" id="exchange-rate" name="exchange-rate" step="0.01" placeholder="Enter rate (optional)">
                                 </div>
                                 <div class="form-group">
                                     <label for="exchange-total">Exchange Value</label>
@@ -558,7 +576,7 @@
                     <div id="cash-payment-details" class="cash-payment-details">
                         <div class="form-group">
                             <label for="cash-amount">Cash Amount *</label>
-                            <input type="number" id="cash-amount" name="cash-amount" step极速="0.01" placeholder="Enter cash amount">
+                            <input type="number" id="cash-amount" name="cash-amount" step="0.01" placeholder="Enter cash amount">
                             <div id="cash-amount-error" class="error-message">Please enter cash amount</div>
                         </div>
                         <div class="form-group">
@@ -570,7 +588,7 @@
                                 </label>
                                 <label>
                                     <input type="radio" name="cash-direction" value="out"> 
-                                    <span class="btn-radio btn-cash-out">Cash Out极速</span>
+                                    <span class="btn-radio btn-cash-out">Cash Out</span>
                                 </label>
                             </div>
                             <div id="cash-direction-error" class="error-message">Please select cash direction</div>
@@ -584,11 +602,11 @@
                             <div class="exchange-type">
                                 <label>
                                     <input type="radio" name="exchange-gold-type" value="Kacha"> 
-                                    <span class="btn-radio">Kacha</span>
+                                    <span class="btn-radio btn-radio-default">Kacha</span>
                                 </label>
                                 <label>
                                     <input type="radio" name="exchange-gold-type" value="Fine Gold"> 
-                                    <span class="btn-radio">Fine Gold</span>
+                                    <span class="btn-radio btn-radio-default">Fine Gold</span>
                                 </label>
                             </div>
                             <div id="exchange-gold-type-error" class="error-message">Please select exchange type</div>
@@ -615,6 +633,11 @@
                         <div class="form-group">
                             <label for="exchange-gold-touch">Touch (%) <span>(optional)</span></label>
                             <input type="number" id="exchange-gold-touch" name="exchange-gold-touch" step="0.01" placeholder="Enter touch % (optional)">
+                        </div>
+                        <!-- Pure Gold Field -->
+                        <div class="form-group gold-purity-field" id="exchange-gold-pure-field">
+                            <label for="exchange-gold-pure">Pure Gold (grams)</label>
+                            <input type="number" id="exchange-gold-pure" name="exchange-gold-pure" step="0.01" placeholder="Calculated pure gold grams" readonly>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Save Entry</button>
@@ -645,6 +668,93 @@
             </form>
         </div>
     </div>
+    
+    <!-- JavaScript for Gold Purity Calculation -->
+    <script>
+        // Calculate pure gold grams
+        function calculatePureGold(touch, weight) {
+            if (!touch || isNaN(touch) || !weight || isNaN(weight)) return 0;
+            return (parseFloat(touch) / 100) * parseFloat(weight);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const typeSelect = document.getElementById("type-select");
+            const goldDetails = document.getElementById("gold-details");
+            const cashDetails = document.getElementById("cash-payment-details");
+            const exchangeGoldDetails = document.getElementById("exchange-gold-details");
+            
+            // Touch and weight inputs for main gold transaction
+            const touchInput = document.getElementById("touch");
+            const gramsInput = document.getElementById("grams");
+            const pureGoldField = document.getElementById("pure-gold");
+            const pureGoldWrapper = document.getElementById("pure-gold-field");
+            
+            // Touch and weight inputs for exchange gold
+            const exchangeTouch = document.getElementById("exchange-touch");
+            const exchangeWeight = document.getElementById("exchange-grams");
+            const exchangePureGoldField = document.getElementById("exchange-pure-gold");
+            const exchangePureGoldWrapper = document.getElementById("exchange-pure-gold-field");
+            
+            // Touch and weight inputs for exchange gold details
+            const exchangeGoldTouch = document.getElementById("exchange-gold-touch");
+            const exchangeGoldWeight = document.getElementById("exchange-gold-grams");
+            const exchangeGoldPureField = document.getElementById("exchange-gold-pure");
+            const exchangeGoldPureWrapper = document.getElementById("exchange-gold-pure-field");
+
+            // Show/hide form sections
+            typeSelect.addEventListener("change", () => {
+                goldDetails.style.display = "none";
+                cashDetails.style.display = "none";
+                exchangeGoldDetails.style.display = "none";
+
+                if (typeSelect.value === "Kacha" || typeSelect.value === "Fine Gold") {
+                    goldDetails.style.display = "block";
+                } else if (typeSelect.value === "Cash Payment") {
+                    cashDetails.style.display = "block";
+                } else if (typeSelect.value === "Exchange Gold") {
+                    exchangeGoldDetails.style.display = "block";
+                }
+            });
+
+            // Auto calculate pure gold grams for main gold transaction
+            function updateMainPureGold() {
+                const touch = parseFloat(touchInput.value) || 0;
+                const weight = parseFloat(gramsInput.value) || 0;
+                const pureGold = calculatePureGold(touch, weight);
+                pureGoldField.value = pureGold ? pureGold.toFixed(2) : "";
+                pureGoldWrapper.style.display = pureGold ? "block" : "none";
+            }
+
+            // Auto calculate pure gold grams for exchange section
+            function updateExchangePureGold() {
+                const touch = parseFloat(exchangeTouch.value) || 0;
+                const weight = parseFloat(exchangeWeight.value) || 0;
+                const pureGold = calculatePureGold(touch, weight);
+                exchangePureGoldField.value = pureGold ? pureGold.toFixed(2) : "";
+                exchangePureGoldWrapper.style.display = pureGold ? "block" : "none";
+            }
+
+            // Auto calculate pure gold grams for exchange gold details
+            function updateExchangeGoldPureGold() {
+                const touch = parseFloat(exchangeGoldTouch.value) || 0;
+                const weight = parseFloat(exchangeGoldWeight.value) || 0;
+                const pureGold = calculatePureGold(touch, weight);
+                exchangeGoldPureField.value = pureGold ? pureGold.toFixed(2) : "";
+                exchangeGoldPureWrapper.style.display = pureGold ? "block" : "none";
+            }
+
+            // Add event listeners
+            if (touchInput) touchInput.addEventListener("input", updateMainPureGold);
+            if (gramsInput) gramsInput.addEventListener("input", updateMainPureGold);
+            
+            if (exchangeTouch) exchangeTouch.addEventListener("input", updateExchangePureGold);
+            if (exchangeWeight) exchangeWeight.addEventListener("input", updateExchangePureGold);
+            
+            if (exchangeGoldTouch) exchangeGoldTouch.addEventListener("input", updateExchangeGoldPureGold);
+            if (exchangeGoldWeight) exchangeGoldWeight.addEventListener("input", updateExchangeGoldPureGold);
+        });
+    </script>
+    
     <!-- External JavaScript file -->
     <script src="dashboard.js"></script>
 </body>
