@@ -48,7 +48,7 @@
         .back-button { background: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-bottom: 15px; display: inline-flex; align-items: center; }
         .back-button i { margin-right: 8px; }
         .transactions-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .transactions-table th, .transactions-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .transactions-table th, .transactions-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #eee; }
         .transactions-table th { background-color: #f8f9fa; font-weight: 600; color: #2c3e50; }
         .transactions-table tr:hover { background-color: #f8f9fa; }
         .add-transaction-btn { margin-top: 15px; }
@@ -157,6 +157,48 @@
             background-color: #f9f9f9;
             border-radius: 8px;
             border-left: 4px solid #d4af37;
+        }
+        
+        /* NEW STYLES FOR TRANSACTION TABLE */
+        .transactions-table tr {
+            height: 40px; /* Reduced row height */
+        }
+        .transactions-table td:nth-child(2) {
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .transactions-table th:nth-child(8),
+        .transactions-table td:nth-child(8) {
+            background-color: #e8f5e9; /* Light green for Cash In */
+            font-weight: bold;
+        }
+        .transactions-table th:nth-child(9),
+        .transactions-table td:nth-child(9) {
+            background-color: #ffebee; /* Light red for Cash Out */
+            font-weight: bold;
+        }
+        .transactions-table th:nth-child(10),
+        .transactions-table td:nth-child(10) {
+            background-color: #e8f5e9; /* Light green for Gold In */
+            font-weight: bold;
+        }
+        .transactions-table th:nth-child(11),
+        .transactions-table td:nth-child(11) {
+            background-color: #ffebee; /* Light red for Gold Out */
+            font-weight: bold;
+        }
+        .transactions-table tfoot {
+            font-weight: bold;
+            background-color: #f5f5f5;
+        }
+        .transactions-table tfoot td {
+            border-top: 2px solid #ddd;
+            padding: 10px 15px;
+        }
+        
+        /* Gold Purity Field */
+        .gold-purity-field {
+            display: none;
         }
         
         @media (min-width: 768px) {
@@ -347,16 +389,28 @@
                                     <th>Type</th>
                                     <th>Grams</th>
                                     <th>Touch</th>
+                                    <th>Gold Purity</th>
                                     <th>Rate</th>
                                     <th>Total</th>
                                     <th>Transaction Type</th>
-                                    <th>Cash/Exchange In/Out</th>
-                                    <th>Exchange Gold In/Out</th>
-                                    <th>Balance</th>
+                                    <th>Cash In (₹)</th>
+                                    <th>Cash Out (₹)</th>
+                                    <th>Gold In (g)</th>
+                                    <th>Gold Out (g)</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="transactions-body"></tbody>
+                            <tfoot id="transactions-footer">
+                                <tr>
+                                    <td colspan="8" style="text-align: right;">Totals:</td>
+                                    <td id="total-cash-in">0.00</td>
+                                    <td id="total-cash-out">0.00</td>
+                                    <td id="total-gold-in">0.000</td>
+                                    <td id="total-gold-out">0.000</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -417,6 +471,10 @@
                     <div class="form-group">
                         <label for="edit-touch">Touch (%)</label>
                         <input type="number" id="edit-touch" step="0.01" placeholder="Enter touch %">
+                    </div>
+                    <div class="form-group gold-purity-field" id="edit-gold-purity-field">
+                        <label for="edit-gold-purity">Gold Purity (Karat)</label>
+                        <input type="number" id="edit-gold-purity" step="0.01" placeholder="Enter gold purity (e.g., 22.5)">
                     </div>
                     <div class="form-group">
                         <label for="edit-rate">Rate (per gram) *</label>
@@ -479,6 +537,10 @@
                         <div class="form-group">
                             <label for="edit-exchange-touch">Touch (%)</label>
                             <input type="number" id="edit-exchange-touch" step="0.01" placeholder="Enter touch %">
+                        </div>
+                        <div class="form-group gold-purity-field" id="edit-exchange-gold-purity-field">
+                            <label for="edit-exchange-gold-purity">Gold Purity (Karat)</label>
+                            <input type="number" id="edit-exchange-gold-purity" step="0.01" placeholder="Enter gold purity (e.g., 22.5)">
                         </div>
                         <div class="form-group">
                             <label for="edit-exchange-rate">Rate (per gram)</label>
@@ -547,6 +609,10 @@
                     <div class="form-group">
                         <label for="edit-exchange-gold-touch">Touch (%)</label>
                         <input type="number" id="edit-exchange-gold-touch" step="0.01" placeholder="Enter touch %">
+                    </div>
+                    <div class="form-group gold-purity-field" id="edit-exchange-gold-purity-main-field">
+                        <label for="edit-exchange-gold-purity-main">Gold Purity (Karat)</label>
+                        <input type="number" id="edit-exchange-gold-purity-main" step="0.01" placeholder="Enter gold purity (e.g., 22.5)">
                     </div>
                 </div>
                 
@@ -689,23 +755,35 @@
         document.getElementById('print-summary').addEventListener('click', function() {
             let title = "KJ GOLD";
             let customerName = document.getElementById('summary-customer-name').textContent;
-            let node = document.getElementById('transactions-summary-section');
-            let tableNode = document.getElementById('transactions-table');
-            html2canvas(node).then(function(canvas1) {
-                html2canvas(tableNode).then(function(canvas2) {
-                    let imgData1 = canvas1.toDataURL('image/png');
-                    let imgData2 = canvas2.toDataURL('image/png');
-                    const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
-                    let w = pdf.internal.pageSize.getWidth();
-                    let h1 = canvas1.height * w / canvas1.width;
-                    let h2 = canvas2.height * w / canvas2.width;
-                    pdf.setFontSize(22); pdf.text(title, w/2, 15, {align:"center"});
-                    pdf.setFontSize(16); pdf.text("Customer: "+customerName, 10, 25);
-                    pdf.addImage(imgData1, 'PNG', 0, 30, w, h1);
-                    pdf.addPage();
-                    pdf.addImage(imgData2, 'PNG', 0, 15, w, h2);
-                    pdf.save('KJGold_'+customerName+'_transactions.pdf');
-                });
+            
+            // Create a temporary container to hold both elements
+            let tempContainer = document.createElement('div');
+            tempContainer.style.width = '1030px';
+            tempContainer.style.padding = '20px';
+            tempContainer.appendChild(document.getElementById('transactions-summary-section').cloneNode(true));
+            tempContainer.appendChild(document.getElementById('transactions-table').cloneNode(true));
+            document.body.appendChild(tempContainer);
+            
+            html2canvas(tempContainer).then(function(canvas) {
+                document.body.removeChild(tempContainer);
+                
+                let imgData = canvas.toDataURL('image/png');
+                const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+                let w = pdf.internal.pageSize.getWidth();
+                let h = canvas.height * w / canvas.width;
+                
+                // Scale to fit on one page
+                if (h > pdf.internal.pageSize.getHeight()) {
+                    h = pdf.internal.pageSize.getHeight() - 20;
+                    w = canvas.width * h / canvas.height;
+                }
+                
+                pdf.setFontSize(22); 
+                pdf.text(title, w/2, 15, {align: "center"});
+                pdf.setFontSize(16); 
+                pdf.text("Customer: " + customerName, 10, 25);
+                pdf.addImage(imgData, 'PNG', 0, 30, w, h);
+                pdf.save('KJGold_'+customerName+'_transactions.pdf');
             });
         });
         
@@ -796,16 +874,66 @@
             const tableElement = document.getElementById('transactions-table');
             const noTransactionsElement = document.getElementById('no-transactions');
             transactionsBody.innerHTML = '';
+            
+            // Initialize totals
+            let totalCashIn = 0;
+            let totalCashOut = 0;
+            let totalGoldIn = 0;
+            let totalGoldOut = 0;
+            
             if (transactions.length === 0) {
                 tableElement.style.display = 'none';
                 noTransactionsElement.style.display = 'block';
                 return;
             }
+            
             tableElement.style.display = 'table';
             noTransactionsElement.style.display = 'none';
+            
             transactions.forEach(transaction => {
-                transactionsBody.appendChild(createTransactionRow(transaction));
+                const row = createTransactionRow(transaction);
+                transactionsBody.appendChild(row);
+                
+                // Calculate totals
+                switch(transaction.type) {
+                    case 'Kacha':
+                    case 'Fine Gold':
+                        if (transaction.transactionType === 'buy') {
+                            if (transaction.paymentMethod === 'cash') {
+                                totalCashOut += parseFloat(transaction.cashGiven) || 0;
+                            }
+                            totalGoldIn += parseFloat(transaction.grams) || 0;
+                        } else if (transaction.transactionType === 'sell') {
+                            if (transaction.paymentMethod === 'cash') {
+                                totalCashIn += parseFloat(transaction.cashGiven) || 0;
+                            }
+                            totalGoldOut += parseFloat(transaction.grams) || 0;
+                        }
+                        break;
+                        
+                    case 'Cash Payment':
+                        if (transaction.cashDirection === 'in') {
+                            totalCashIn += parseFloat(transaction.cashAmount) || 0;
+                        } else if (transaction.cashDirection === 'out') {
+                            totalCashOut += parseFloat(transaction.cashAmount) || 0;
+                        }
+                        break;
+                        
+                    case 'Exchange Gold':
+                        if (transaction.exchangeGoldDirection === 'buy') {
+                            totalGoldIn += parseFloat(transaction.exchangeGrams) || 0;
+                        } else if (transaction.exchangeGoldDirection === 'sell') {
+                            totalGoldOut += parseFloat(transaction.exchangeGrams) || 0;
+                        }
+                        break;
+                }
             });
+            
+            // Update footer with totals
+            document.getElementById('total-cash-in').textContent = totalCashIn.toFixed(2);
+            document.getElementById('total-cash-out').textContent = totalCashOut.toFixed(2);
+            document.getElementById('total-gold-in').textContent = totalGoldIn.toFixed(3);
+            document.getElementById('total-gold-out').textContent = totalGoldOut.toFixed(3);
         }
         
         // SIMPLIFIED AND CORRECTED SUMMARY CALCULATION
@@ -889,112 +1017,183 @@
                 goldBalanceEl.className = 'we-owe';
             }
         }
-
         function createTransactionRow(transaction) {
-            const row = document.createElement('tr');
-            let dateString = 'N/A';
-            if (transaction.createdAt) {
-                const date = transaction.createdAt.toDate();
-                dateString = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+    const row = document.createElement('tr');
+    let dateString = 'N/A';
+    if (transaction.createdAt) {
+        const date = transaction.createdAt.toDate();
+        dateString = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+    }
+    
+    // Initialize values for the new columns
+    let cashIn = '';
+    let cashOut = '';
+    let goldIn = '';
+    let goldOut = '';
+    
+    // Set default values for display
+    let displayType = transaction.type || 'N/A';
+    let displayGrams = transaction.grams || 'N/A';
+    let displayTouch = transaction.touch || 'N/A';
+    let displayRate = transaction.rate || 'N/A';
+    let displayTotal = transaction.total || 'N/A';
+    let transactionTypeDisplay = 'N/A';
+    let pureGoldGrams = 'N/A';
+    
+    // Handle different transaction types
+    switch(transaction.type) {
+        case 'Kacha':
+        case 'Fine Gold':
+            // Gold transactions
+            if (transaction.transactionType === 'buy') {
+                // We're buying from customer
+                if (transaction.paymentMethod === 'cash') {
+                    cashOut = `₹${transaction.cashGiven ? Number(transaction.cashGiven).toFixed(2) : '0.00'}`;
+                } else if (transaction.paymentMethod === 'exchange') {
+                    goldIn = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
+                }
+                // Record the gold we're receiving
+                goldIn = `${transaction.grams ? Number(transaction.grams).toFixed(3) : '0.000'} g`;
+                
+            } else if (transaction.transactionType === 'sell') {
+                // We're selling to customer
+                if (transaction.paymentMethod === 'cash') {
+                    cashIn = `₹${transaction.cashGiven ? Number(transaction.cashGiven).toFixed(2) : '0.00'}`;
+                } else if (transaction.paymentMethod === 'exchange') {
+                    goldOut = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
+                }
+                // Record the gold we're giving
+                goldOut = `${transaction.grams ? Number(transaction.grams).toFixed(3) : '0.000'} g`;
             }
             
-            let cashExchangeInOut = '';
-            let exchangeGoldInOut = '';
-            let balance = 0;
+            transactionTypeDisplay = transaction.transactionType || 'N/A';
             
-            // Handle different transaction types
-            switch(transaction.type) {
-                case 'Kacha':
-                case 'Fine Gold':
-                    // Gold transactions
-                    if (transaction.transactionType === 'buy') {
-                        cashExchangeInOut = transaction.paymentMethod === 'cash' ? 
-                            `Out: ₹${transaction.cashGiven ? Number(transaction.cashGiven).toFixed(2) : '0.00'}` :
-                            `Out: ₹${transaction.exchangeTotal ? Number(transaction.exchangeTotal).toFixed(2) : '0.00'}`;
-                        
-                        if (transaction.paymentMethod === 'exchange') {
-                            exchangeGoldInOut = `In: ${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
-                        }
-                        
-                        // Calculate balance for buy transaction
-                        const totalValue = parseFloat(transaction.total) || 0;
-                        const paymentMade = transaction.paymentMethod === 'cash' ? 
-                            parseFloat(transaction.cashGiven) || 0 : 
-                            parseFloat(transaction.exchangeTotal) || 0;
-                        balance = totalValue - paymentMade;
-                        
-                    } else if (transaction.transactionType === 'sell') {
-                        cashExchangeInOut = transaction.paymentMethod === 'cash' ? 
-                            `In: ₹${transaction.cashGiven ? Number(transaction.cashGiven).toFixed(2) : '0.00'}` :
-                            `In: ₹${transaction.exchangeTotal ? Number(transaction.exchangeTotal).toFixed(2) : '0.00'}`;
-                        
-                        if (transaction.paymentMethod === 'exchange') {
-                            exchangeGoldInOut = `Out: ${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
-                        }
-                        
-                        // Calculate balance for sell transaction
-                        const totalValue = parseFloat(transaction.total) || 0;
-                        const paymentReceived = transaction.paymentMethod === 'cash' ? 
-                            parseFloat(transaction.cashGiven) || 0 : 
-                            parseFloat(transaction.exchangeTotal) || 0;
-                        balance = totalValue - paymentReceived;
-                    }
-                    break;
-                    
-                case 'Cash Payment':
-                    // Cash transactions
-                    if (transaction.cashDirection === 'in') {
-                        cashExchangeInOut = `In: ₹${transaction.cashAmount ? Number(transaction.cashAmount).toFixed(2) : '0.00'}`;
-                        balance = -parseFloat(transaction.cashAmount) || 0;
-                    } else if (transaction.cashDirection === 'out') {
-                        cashExchangeInOut = `Out: ₹${transaction.cashAmount ? Number(transaction.cashAmount).toFixed(2) : '0.00'}`;
-                        balance = parseFloat(transaction.cashAmount) || 0;
-                    }
-                    break;
-                    
-                case 'Exchange Gold':
-                    // Pure gold exchange
-                    if (transaction.exchangeGoldDirection === 'buy') {
-                        exchangeGoldInOut = `In: ${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
-                        balance = 0; // No money involved in pure gold exchange
-                    } else if (transaction.exchangeGoldDirection === 'sell') {
-                        exchangeGoldInOut = `Out: ${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
-                        balance = 0; // No money involved in pure gold exchange
-                    }
-                    break;
+            // Calculate pure gold grams
+            if (transaction.grams && transaction.touch) {
+                const pureGrams = (Number(transaction.grams) * Number(transaction.touch)) / 100;
+                pureGoldGrams = pureGrams.toFixed(3) + ' g';
+            } else if (transaction.type === 'Fine Gold' && transaction.grams) {
+                // Fine Gold is 100% pure
+                pureGoldGrams = Number(transaction.grams).toFixed(3) + ' g';
+            }
+            break;
+            
+        case 'Cash Payment':
+            // Cash transactions
+            if (transaction.cashDirection === 'in') {
+                cashIn = `₹${transaction.cashAmount ? Number(transaction.cashAmount).toFixed(2) : '0.00'}`;
+            } else if (transaction.cashDirection === 'out') {
+                cashOut = `₹${transaction.cashAmount ? Number(transaction.cashAmount).toFixed(2) : '0.00'}`;
             }
             
-            row.innerHTML = `
-                <td>${dateString}</td>
-                <td>${transaction.type || 'N/A'}</td>
-                <td>${transaction.grams ? Number(transaction.grams).toFixed(3) : 'N/A'}</td>
-                <td>${transaction.touch ? Number(transaction.touch).toFixed(1) + '%' : 'N/A'}</td>
-                <td>${transaction.rate ? '₹' + Number(transaction.rate).toFixed(2) : 'N/A'}</td>
-                <td>${transaction.total ? '₹' + Number(transaction.total).toFixed(2) : 'N/A'}</td>
-                <td>${transaction.transactionType || transaction.cashDirection || transaction.exchangeGoldDirection || 'N/A'}</td>
-                <td>${cashExchangeInOut}</td>
-                <td>${exchangeGoldInOut}</td>
-                <td>${balance !== 0 ? '₹' + balance.toFixed(2) : 'N/A'}</td>
-                <td class="transaction-actions">
-                    <button class="edit-btn" data-id="${transaction.id}">Edit</button>
-                    <button class="delete-btn" data-id="${transaction.id}">Delete</button>
-                </td>
-            `;
+            transactionTypeDisplay = transaction.cashDirection || 'N/A';
+            break;
             
-            // Add event listeners for edit and delete buttons
-            row.querySelector('.edit-btn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                editTransaction(transaction);
-            });
-            
-            row.querySelector('.delete-btn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                confirmDeleteTransaction(transaction);
-            });
-            
-            return row;
-        }
+            case 'Exchange Gold':
+    // Pure gold exchange
+    // Check all possible field names that might contain the direction
+    const direction = transaction.exchangeGoldDirection || 
+                     transaction.direction || 
+                     transaction.transactionType ||
+                     (transaction.exchangeGoldDirection === 'buy' ? 'buy' : 
+                      transaction.exchangeGoldDirection === 'sell' ? 'sell' : null);
+    
+    if (direction === 'buy') {
+        // We're buying gold from customer
+        goldIn = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
+        transactionTypeDisplay = 'buy';
+    } else if (direction === 'sell') {
+        // We're selling gold to customer
+        goldOut = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
+        transactionTypeDisplay = 'sell';
+    } else {
+        // If we still can't determine, check the actual form data that was saved
+        // Look for any indication of direction in the transaction data
+        console.log("Full transaction data:", transaction);
         
+        // Try to infer from other fields - if goldOut is populated, it's probably sell
+        if (transaction.goldOut || transaction.cashIn) {
+            transactionTypeDisplay = 'sell';
+        } 
+        // If goldIn is populated, it's probably buy
+        else if (transaction.goldIn || transaction.cashOut) {
+            transactionTypeDisplay = 'buy';
+        }
+        else {
+            transactionTypeDisplay = 'unknown';
+        }
+    }
+    
+    // For Exchange Gold, use exchangeGrams in the grams column
+    displayGrams = transaction.exchangeGrams || 'N/A';
+    
+    // For Exchange Gold, use exchangeTouch in the touch column
+    displayTouch = transaction.exchangeTouch || transaction.touch || 'N/A';
+    
+    // Show exchange type in parentheses
+    if (transaction.exchangeType) {
+        displayType = `${transaction.type} (${transaction.exchangeType})`;
+    }
+    
+    // Calculate pure gold grams for Exchange Gold
+    if (transaction.exchangeGrams && transaction.exchangeTouch) {
+        const pureGrams = (Number(transaction.exchangeGrams) * Number(transaction.exchangeTouch)) / 100;
+        pureGoldGrams = pureGrams.toFixed(3) + ' g';
+    } else if (transaction.exchangeType === 'Fine Gold' && transaction.exchangeGrams) {
+        // Fine Gold is 100% pure
+        pureGoldGrams = Number(transaction.exchangeGrams).toFixed(3) + ' g';
+    } else if (transaction.exchangeGrams) {
+        // If no touch percentage, assume 100% pure
+        pureGoldGrams = Number(transaction.exchangeGrams).toFixed(3) + ' g';
+    }
+    
+    // DEBUG: Log the transaction to see what fields are available
+    console.log("Exchange Gold Transaction - Direction:", direction);
+    console.log("Available fields:", Object.keys(transaction).filter(key => 
+        key.includes('direction') || key.includes('Direction') || 
+        key.includes('type') || key.includes('Type')));
+    break;
+    }
+    
+    // Format numeric values
+    if (displayGrams !== 'N/A') displayGrams = Number(displayGrams).toFixed(3);
+    if (displayTouch !== 'N/A') displayTouch = Number(displayTouch).toFixed(1) + '%';
+    if (displayRate !== 'N/A') displayRate = '₹' + Number(displayRate).toFixed(2);
+    if (displayTotal !== 'N/A') displayTotal = '₹' + Number(displayTotal).toFixed(2);
+    
+    row.innerHTML = `
+        <td>${dateString}</td>
+        <td>${displayType}</td>
+        <td>${displayGrams}</td>
+        <td>${displayTouch}</td>
+        <td>${pureGoldGrams}</td>
+        <td>${displayRate}</td>
+        <td>${displayTotal}</td>
+        <td>${transactionTypeDisplay}</td> <!-- This will now show buy/sell for Exchange Gold -->
+        <td>${cashIn}</td>
+        <td>${cashOut}</td>
+        <td>${goldIn}</td>
+        <td>${goldOut}</td>
+        <td class="transaction-actions">
+            <button class="edit-btn" data-id="${transaction.id}">Edit</button>
+            <button class="delete-btn" data-id="${transaction.id}">Delete</button>
+        </td>
+    `;
+    
+    // Add event listeners for edit and delete buttons
+    row.querySelector('.edit-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        editTransaction(transaction);
+    });
+    
+    row.querySelector('.delete-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        confirmDeleteTransaction(transaction);
+    });
+    
+    return row;
+}
+  
         // Edit transaction function
         function editTransaction(transaction) {
             // Populate the form with transaction data
@@ -1008,8 +1207,16 @@
             if (transaction.type === 'Kacha' || transaction.type === 'Fine Gold') {
                 document.getElementById('edit-grams').value = transaction.grams || '';
                 document.getElementById('edit-touch').value = transaction.touch || '';
+                document.getElementById('edit-gold-purity').value = transaction.goldPurity || '';
                 document.getElementById('edit-rate').value = transaction.rate || '';
                 document.getElementById('edit-total').value = transaction.total || '';
+                
+                // Show gold purity field only for Kacha
+                if (transaction.type === 'Kacha') {
+                    document.getElementById('edit-gold-purity-field').style.display = 'block';
+                } else {
+                    document.getElementById('edit-gold-purity-field').style.display = 'none';
+                }
                 
                 // Set transaction type
                 if (transaction.transactionType) {
@@ -1027,9 +1234,17 @@
                         document.querySelector(`input[name="edit-exchange-type"][value="${transaction.exchangeType}"]`).checked = true;
                         document.getElementById('edit-exchange-grams').value = transaction.exchangeGrams || '';
                         document.getElementById('edit-exchange-touch').value = transaction.exchangeTouch || '';
+                        document.getElementById('edit-exchange-gold-purity').value = transaction.exchangeGoldPurity || '';
                         document.getElementById('edit-exchange-rate').value = transaction.exchangeRate || '';
                         document.getElementById('edit-exchange-total').value = transaction.exchangeTotal || '';
                         document.getElementById('edit-exchange-details').style.display = 'block';
+                        
+                        // Show gold purity field only for Kacha in exchange
+                        if (transaction.exchangeType === 'Kacha') {
+                            document.getElementById('edit-exchange-gold-purity-field').style.display = 'block';
+                        } else {
+                            document.getElementById('edit-exchange-gold-purity-field').style.display = 'none';
+                        }
                     }
                 }
             } else if (transaction.type === 'Cash Payment') {
@@ -1040,6 +1255,7 @@
             } else if (transaction.type === 'Exchange Gold') {
                 document.getElementById('edit-exchange-gold-grams').value = transaction.exchangeGrams || '';
                 document.getElementById('edit-exchange-gold-touch').value = transaction.exchangeTouch || '';
+                document.getElementById('edit-exchange-gold-purity-main').value = transaction.goldPurity || '';
                 
                 if (transaction.exchangeGoldDirection) {
                     document.querySelector(`input[name="edit-exchange-gold-direction"][value="${transaction.exchangeGoldDirection}"]`).checked = true;
@@ -1047,6 +1263,13 @@
                 
                 if (transaction.exchangeType) {
                     document.querySelector(`input[name="edit-exchange-gold-type"][value="${transaction.exchangeType}"]`).checked = true;
+                    
+                    // Show gold purity field only for Kacha
+                    if (transaction.exchangeType === 'Kacha') {
+                        document.getElementById('edit-exchange-gold-purity-main-field').style.display = 'block';
+                    } else {
+                        document.getElementById('edit-exchange-gold-purity-main-field').style.display = 'none';
+                    }
                 }
             }
             
@@ -1127,6 +1350,11 @@
                 transactionData.rate = parseFloat(document.getElementById('edit-rate').value) || 0;
                 transactionData.total = parseFloat(document.getElementById('edit-total').value) || 0;
                 
+                // Add gold purity only for Kacha
+                if (type === 'Kacha') {
+                    transactionData.goldPurity = parseFloat(document.getElementById('edit-gold-purity').value) || 0;
+                }
+                
                 // Get transaction type
                 const transactionType = document.querySelector('input[name="edit-transaction-type"]:checked');
                 if (transactionType) {
@@ -1149,6 +1377,11 @@
                         transactionData.exchangeTouch = parseFloat(document.getElementById('edit-exchange-touch').value) || 0;
                         transactionData.exchangeRate = parseFloat(document.getElementById('edit-exchange-rate').value) || 0;
                         transactionData.exchangeTotal = parseFloat(document.getElementById('edit-exchange-total').value) || 0;
+                        
+                        // Add exchange gold purity only for Kacha
+                        if (exchangeType && exchangeType.value === 'Kacha') {
+                            transactionData.exchangeGoldPurity = parseFloat(document.getElementById('edit-exchange-gold-purity').value) || 0;
+                        }
                     }
                 }
             } else if (type === 'Cash Payment') {
@@ -1169,7 +1402,12 @@
                 
                 const exchangeType = document.querySelector('input[name="edit-exchange-gold-type"]:checked');
                 if (exchangeType) {
-                    transactionData.exchangeType = exchangeType.value;
+                    transactionData.exchangeType = exchangeType.value; // This was missing
+                    
+                    // Add gold purity only for Kacha
+                    if (exchangeType.value === 'Kacha') {
+                        transactionData.goldPurity = parseFloat(document.getElementById('edit-exchange-gold-purity-main').value) || 0;
+                    }
                 }
             }
             
@@ -1180,10 +1418,17 @@
         // Event listener for type change in edit form
         document.getElementById('edit-type').addEventListener('change', function() {
             toggleEditSections(this.value);
+            
+            // Show/hide gold purity field based on type
+            if (this.value === 'Kacha') {
+                document.getElementById('edit-gold-purity-field').style.display = 'block';
+            } else {
+                document.getElementById('edit-gold-purity-field').style.display = 'none';
+            }
         });
         
-        // Event listener for payment method change in edit form
-        document.querySelectorAll('input[name="edit-payment-method"]').forEach(radio => {
+        // Event listener for exchange type change in edit form
+        document.querySelectorAll('input[name="edit-exchange-type"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 if (this.value === 'cash') {
                     document.getElementById('edit-cash-details').style.display = 'block';
@@ -1191,6 +1436,26 @@
                 } else if (this.value === 'exchange') {
                     document.getElementById('edit-cash-details').style.display = 'none';
                     document.getElementById('edit-exchange-details').style.display = 'block';
+                    
+                    // Show/hide gold purity field based on exchange type
+                    const exchangeType = document.querySelector('input[name="edit-exchange-type"]:checked');
+                    if (exchangeType && exchangeType.value === 'Kacha') {
+                        document.getElementById('edit-exchange-gold-purity-field').style.display = 'block';
+                    } else {
+                        document.getElementById('edit-exchange-gold-purity-field').style.display = 'none';
+                    }
+                }
+            });
+        });
+        
+        // Event listener for exchange gold type change in edit form
+        document.querySelectorAll('input[name="edit-exchange-gold-type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Show/hide gold purity field based on exchange type
+                if (this.value === 'Kacha') {
+                    document.getElementById('edit-exchange-gold-purity-main-field').style.display = 'block';
+                } else {
+                    document.getElementById('edit-exchange-gold-purity-main-field').style.display = 'none';
                 }
             });
         });
