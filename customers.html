@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Management - KJ GOLD</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Customer Management - KJ GOLD</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+                 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%); min-height: 100vh; color: #333; padding: 0; }
         .dashboard-container { display: flex; flex-direction: column; min-height: 100vh; }
         .header { background: linear-gradient(to right, #2c3e50, #1a2530); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
@@ -47,10 +47,42 @@
         .transactions-section { display: none; margin-top: 20px; }
         .back-button { background: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-bottom: 15px; display: inline-flex; align-items: center; }
         .back-button i { margin-right: 8px; }
-        .transactions-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .transactions-table th, .transactions-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #eee; }
-        .transactions-table th { background-color: #f8f9fa; font-weight: 600; color: #2c3e50; }
+        
+        /* UPDATED TRANSACTION TABLE STYLES */
+        .transactions-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 15px; 
+            border: 1px solid #ddd;
+        }
+        .transactions-table th, .transactions-table td { 
+            padding: 8px 10px; 
+            text-align: left; 
+            border-bottom: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+            color: #333; /* Black text color */
+            background-color: white; /* White background */
+        }
+        .transactions-table th { 
+            background-color: #f8f9fa; 
+            font-weight: 600; 
+            color: #2c3e50; 
+            border-bottom: 2px solid #ddd;
+        }
+        .transactions-table th:last-child, 
+        .transactions-table td:last-child {
+            border-right: none;
+        }
         .transactions-table tr:hover { background-color: #f8f9fa; }
+        .transactions-table tfoot {
+            font-weight: bold;
+            background-color: #f5f5f5;
+        }
+        .transactions-table tfoot td {
+            border-top: 2px solid #ddd;
+            padding: 10px 15px;
+        }
+        
         .add-transaction-btn { margin-top: 15px; }
         .right-side { display: none; }
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; display: none; }
@@ -159,43 +191,6 @@
             border-left: 4px solid #d4af37;
         }
         
-        /* NEW STYLES FOR TRANSACTION TABLE */
-        .transactions-table tr {
-            height: 40px; /* Reduced row height */
-        }
-        .transactions-table td:nth-child(2) {
-            font-weight: bold;
-            font-size: 15px;
-        }
-        .transactions-table th:nth-child(8),
-        .transactions-table td:nth-child(8) {
-            background-color: #e8f5e9; /* Light green for Cash In */
-            font-weight: bold;
-        }
-        .transactions-table th:nth-child(9),
-        .transactions-table td:nth-child(9) {
-            background-color: #ffebee; /* Light red for Cash Out */
-            font-weight: bold;
-        }
-        .transactions-table th:nth-child(10),
-        .transactions-table td:nth-child(10) {
-            background-color: #e8f5e9; /* Light green for Gold In */
-            font-weight: bold;
-        }
-        .transactions-table th:nth-child(11),
-        .transactions-table td:nth-child(11) {
-            background-color: #ffebee; /* Light red for Gold Out */
-            font-weight: bold;
-        }
-        .transactions-table tfoot {
-            font-weight: bold;
-            background-color: #f5f5f5;
-        }
-        .transactions-table tfoot td {
-            border-top: 2px solid #ddd;
-            padding: 10px 15px;
-        }
-        
         /* Gold Purity Field */
         .gold-purity-field {
             display: none;
@@ -224,7 +219,12 @@
             .sidebar { display: none; }
             .customer-item { flex-direction: column; align-items: flex-start; gap: 10px; }
             .customer-actions { align-self: flex-end; }
-            .transactions-table { display: block; overflow-x: auto; }
+            .transactions-table { 
+                display: block; 
+                overflow-x: auto; 
+                white-space: nowrap;
+                font-size: 14px;
+            }
             .summary-grid {
                 grid-template-columns: 1fr;
             }
@@ -232,1329 +232,1427 @@
                 flex-direction: column;
             }
         }
-    </style>
-    <!-- jsPDF for PDF printing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-</head>
-<body>
-    <div class="dashboard-container">
-        <!-- Header for Mobile -->
-        <div class="header">
-            <div class="logo">
-                <h1>KJ GOLD</h1>
-            </div>
-            <button class="menu-btn" id="mobile-menu-button">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        <!-- Mobile Menu -->
-        <div class="overlay" id="overlay"></div>
-        <div class="mobile-menu" id="mobile-menu">
-            <div class="menu-header">
-                <button class="menu-close" id="menu-close">
-                    <i class="fas fa-times"></i>
+        
+        /* Enhanced table styles for PDF */
+        .enhanced-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 12px;
+        }
+        
+        .enhanced-table th, .enhanced-table td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        .enhanced-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        .enhanced-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .positive-value {
+            color: #2e7d32;
+            font-weight: 500;
+        }
+        
+        .negative-value {
+            color: #c62828;
+            font-weight: 500;
+        }
+        
+        .numeric-cell {
+            text-align: right;
+        }
+        </style>
+        <!-- jsPDF for PDF printing -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <!-- Firebase SDK -->
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    </head>
+    <body>
+        <div class="dashboard-container">
+            <!-- Header for Mobile -->
+            <div class="header">
+                <div class="logo">
+                    <h1>KJ GOLD</h1>
+                </div>
+                <button class="menu-btn" id="mobile-menu-button">
+                    <i class="fas fa-bars"></i>
                 </button>
-                <div class="menu-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <h2 id="mobile-username">John Doe</h2>
-                <p>Premium Member</p>
             </div>
-            <div class="menu-items">
-                <a href="dashboard.html" class="menu-item">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="customers.html" class="menu-item active">
-                    <i class="fas fa-users"></i>
-                    <span>Customers</span>
-                </a>
-                <a href="#" class="menu-item" id="mobile-add-customer">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Add Customer</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-                <a href="#" class="menu-item" id="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
-            <div class="menu-footer">
-                <p>KJ GOLD &copy; 2023</p>
-            </div>
-        </div>
-        <!-- Sidebar for Desktop -->
-        <div class="sidebar">
-            <div class="logo">
-                <h1>KJ GOLD</h1>
-                <p>Client Management System</p>
-            </div>
-            <div class="user-profile">
-                <div class="avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <h2 id="desktop-username">John Doe</h2>
-                <p>Premium Member</p>
-            </div>
-            <div class="nav-links">
-                <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="customers.html" class="nav-item active">
-                    <i class="fas fa-users"></i>
-                    <span>Customers</span>
-                </a>
-                <a href="#" class="nav-item" id="add-customer-sidebar">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Add Customer</span>
-                </a>
-                <a href="#" class="nav-item" id="logout-btn-desktop">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
-        </div>
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="welcome-section">
-                <h2>Customer Management</h2>
-                <p>View and manage all your customers and their transactions</p>
-                <div class="username-display" id="username-display">Welcome, User</div>
-            </div>
-            <div class="card">
-                <div class="card-header">
-                    <h3>All Customers</h3>
-                    <button class="btn btn-primary" id="add-customer-btn">
-                        <i class="fas fa-user-plus"></i> Add Customer
+            <!-- Mobile Menu -->
+            <div class="overlay" id="overlay"></div>
+            <div class="mobile-menu" id="mobile-menu">
+                <div class="menu-header">
+                    <button class="menu-close" id="menu-close">
+                        <i class="fas fa-times"></i>
                     </button>
+                    <div class="menu-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 id="mobile-username">John Doe</h2>
+                    <p>Premium Member</p>
                 </div>
-                <div class="customer-list" id="customer-list">
-                    <div class="loading-text" id="loading-customers">Loading customers...</div>
-                    <div class="no-customers" id="no-customers" style="display: none;">No customers found. Add your first customer!</div>
-                    <div class="error-text" id="error-customers" style="display: none;">Error loading customers. Please try again.</div>
+                <div class="menu-items">
+                    <a href="dashboard.html" class="menu-item">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="customers.html" class="menu-item active">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                    </a>
+                    <a href="#" class="menu-item" id="mobile-add-customer">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add Customer</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="#" class="menu-item" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+                <div class="menu-footer">
+                    <p>KJ GOLD &copy; 2023</p>
                 </div>
             </div>
-            <!-- Transactions Section (initially hidden) -->
-            <div class="transactions-section" id="transactions-section">
-                <button class="back-button" id="back-to-customers">
-                    <i class="fas fa-arrow-left"></i> Back to Customers
-                </button>
+            <!-- Sidebar for Desktop -->
+            <div class="sidebar">
+                <div class="logo">
+                    <h1>KJ GOLD</h1>
+                    <p>Client Management System</p>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 id="desktop-username">John Doe</h2>
+                    <p>Premium Member</p>
+                </div>
+                <div class="nav-links">
+                    <a href="dashboard.html" class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="customers.html" class="nav-item active">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                    </a>
+                    <a href="#" class="nav-item" id="add-customer-sidebar">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add Customer</span>
+                    </a>
+                    <a href="#" class="nav-item" id="logout-btn-desktop">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="welcome-section">
+                    <h2>Customer Management</h2>
+                    <p>View and manage all your customers and their transactions</p>
+                    <div class="username-display" id="username-display">Welcome, User</div>
+                </div>
                 <div class="card">
                     <div class="card-header">
-                        <h3 id="customer-transactions-title">Transactions for Customer</h3>
+                        <h3>All Customers</h3>
+                        <button class="btn btn-primary" id="add-customer-btn">
+                            <i class="fas fa-user-plus"></i> Add Customer
+                        </button>
                     </div>
-                    <!-- FILTER CONTROLS -->
-                    <div class="filter-controls">
-                        <label for="filter-month">Month:</label>
-                        <select id="filter-month"><option value="">All</option></select>
-                        <label for="filter-from">From:</label>
-                        <input type="date" id="filter-from">
-                        <label for="filter-to">To:</label>
-                        <input type="date" id="filter-to">
-                        <button id="apply-filter" class="btn btn-primary">Apply Filter</button>
-                        <button id="clear-filter" class="btn btn-primary">Clear</button>
-                        <button class="print-btn" id="print-summary">Print PDF</button>
-                    </div>
-                    <div id="transactions-summary-section">
-                        <div class="summary-title">KJ GOLD - Transaction Summary</div>
-                        <div style="padding-left:10px; font-size:18px; color:#333;">Customer: <span id="summary-customer-name"></span></div>
-                        <div class="summary-grid" id="summary-grid">
-                            <div class="summary-card">
-                                <h4>Money Balance</h4>
-                                <p id="money-balance">₹0.00</p>
-                            </div>
-                            <div class="summary-card">
-                                <h4>Gold Balance</h4>
-                                <p id="gold-balance">0.000 g</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="transactions-content">
-                        <div class="loading-text" id="loading-transactions">Loading transactions...</div>
-                        <div class="no-transactions" id="no-transactions" style="display: none;">No transactions found for this customer.</div>
-                        <div class="error-text" id="error-transactions" style="display: none;">Error loading transactions. Please try again.</div>
-                        <table class="transactions-table" id="transactions-table" style="display: none;">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Type</th>
-                                    <th>Grams</th>
-                                    <th>Touch</th>
-                                    <th>Gold Purity</th>
-                                    <th>Rate</th>
-                                    <th>Total</th>
-                                    <th>Transaction Type</th>
-                                    <th>Cash In (₹)</th>
-                                    <th>Cash Out (₹)</th>
-                                    <th>Gold In (g)</th>
-                                    <th>Gold Out (g)</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="transactions-body"></tbody>
-                            <tfoot id="transactions-footer">
-                                <tr>
-                                    <td colspan="8" style="text-align: right;">Totals:</td>
-                                    <td id="total-cash-in">0.00</td>
-                                    <td id="total-cash-out">0.00</td>
-                                    <td id="total-gold-in">0.000</td>
-                                    <td id="total-gold-out">0.000</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                    <div class="customer-list" id="customer-list">
+                        <div class="loading-text" id="loading-customers">Loading customers...</div>
+                        <div class="no-customers" id="no-customers" style="display: none;">No customers found. Add your first customer!</div>                    <div class="error-text" id="error-customers" style="display: none;">Error loading customers. Please try again.</div>
                     </div>
                 </div>
+                <!-- Transactions Section (initially hidden) -->
+                <div class="transactions-section" id="transactions-section">
+                    <button class="back-button" id="back-to-customers">
+                        <i class="fas fa-arrow-left"></i> Back to Customers
+                    </button>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 id="customer-transactions-title">Transactions for Customer</h3>
+                        </div>
+                        <!-- FILTER CONTROLS -->
+                        <div class="filter-controls">
+                            <label for="filter-month">Month:</label>
+                            <select id="filter-month"><option value="">All</option></select>
+                            <label for="filter-from">From:</label>
+                            <input type="date" id="filter-from">
+                            <label for="filter-to">To:</label>
+                            <input type="date" id="filter-to">
+                            <button id="apply-filter" class="btn btn-primary">Apply Filter</button>
+                            <button id="clear-filter" class="btn btn-primary">Clear</button>
+                            <button class="print-btn" id="print-summary">Print PDF</button>
+                        </div>
+                        <div id="transactions-summary-section">
+                            <div class="summary-title">KJ GOLD - Transaction Summary</div>
+                            <div style="padding-left:10px; font-size:18px; color:#333;">Customer: <span id="summary-customer-name"></span></div>
+                            <div class="summary-grid" id="summary-grid">
+                                <div class="summary-card">
+                                    <h4>Money Balance</h4>
+                                    <p id="money-balance">₹0.00</p>
+                                </div>
+                                <div class="summary-card">
+                                    <h4>Gold Balance</h4>
+                                    <p id="gold-balance">0.000 g</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="transactions-content">
+                            <div class="loading-text" id="loading-transactions">Loading transactions...</div>
+                            <div class="no-transactions" id="no-transactions" style="display: none;">No transactions found for this customer.</div>
+                            <div class="error-text" id="error-transactions" style="display: none;">Error loading transactions. Please try again.</div>
+                            <table class="transactions-table" id="transactions-table" style="display: none;">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Grams</th>
+                                        <th>Touch</th>
+                                        <th>Gold Purity</th>
+                                        <th>Rate</th>
+                                        <th>Total</th>
+                                        <th>Transaction Type</th>
+                                        <th>Cash In (₹)</th>
+                                        <th>Cash Out (₹)</th>
+                                        <th>Gold In (g)</th>
+                                        <th>Gold Out (g)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactions-body"></tbody>
+                                <tfoot id="transactions-footer">
+                                    <tr>
+                                        <td colspan="8" style="text-align: right;">Totals:</td>
+                                        <td id="total-cash-in">0.00</td>
+                                        <td id="total-cash-out">0.00</td>
+                                        <td id="total-gold-in">0.000</td>
+                                        <td id="total-gold-out">0.000</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-side"></div>
+        </div>
+        <!-- Add Customer Modal -->
+        <div class="modal" id="customer-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add New Customer</h3>   
+                    <button class="close-btn" id="close-modal">&times;</button>
+                </div>
+                <form id="customer-form">
+                    <div class="form-group">
+                        <label for="customer-name">Full Name *</label>
+                        <input type="text" id="customer-name" placeholder="Enter customer name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-phone">Mobile Number *</label>
+                        <input type="tel" id="customer-phone" placeholder="Enter mobile number" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-save"></i> Save Customer
+                    </button>
+                </form>
             </div>
         </div>
-        <div class="right-side"></div>
-    </div>
-    <!-- Add Customer Modal -->
-    <div class="modal" id="customer-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add New Customer</h3>   
-                <button class="close-btn" id="close-modal">&times;</button>
-            </div>
-            <form id="customer-form">
-                <div class="form-group">
-                    <label for="customer-name">Full Name *</label>
-                    <input type="text" id="customer-name" placeholder="Enter customer name" required>
+        
+        <!-- Edit Transaction Modal -->
+        <div class="modal" id="edit-transaction-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Edit Transaction</h3>   
+                    <button class="close-btn" id="close-edit-modal">&times;</button>
                 </div>
-                <div class="form-group">
-                    <label for="customer-phone">Mobile Number *</label>
-                    <input type="tel" id="customer-phone" placeholder="Enter mobile number" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-save"></i> Save Customer
-                </button>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Edit Transaction Modal -->
-    <div class="modal" id="edit-transaction-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Edit Transaction</h3>   
-                <button class="close-btn" id="close-edit-modal">&times;</button>
-            </div>
-            <form id="edit-transaction-form">
-                <input type="hidden" id="edit-transaction-id">
-                
-                <div class="form-group">
-                    <label for="edit-type">Type *</label>
-                    <select id="edit-type" required>
-                        <option value="">-- Select Type --</option>
-                        <option value="Kacha">Kacha</option>
-                        <option value="Fine Gold">Fine Gold</option>
-                        <option value="Cash Payment">Cash Payment</option>
-                        <option value="Exchange Gold">Exchange Gold</option>
-                    </select>
-                </div>
-                
-                <!-- Gold Transaction Fields -->
-                <div id="edit-gold-details" class="edit-section">
+                <form id="edit-transaction-form">
+                    <input type="hidden" id="edit-transaction-id">
+                    
                     <div class="form-group">
-                        <label for="edit-grams">Grams *</label>
-                        <input type="number" id="edit-grams" step="0.01" placeholder="Enter grams">
+                        <label for="edit-type">Type *</label>
+                        <select id="edit-type" required>
+                            <option value="">-- Select Type --</option>
+                            <option value="Kacha">Kacha</option>
+                            <option value="Fine Gold">Fine Gold</option>
+                            <option value="Cash Payment">Cash Payment</option>
+                            <option value="Exchange Gold">Exchange Gold</option>
+                        </select>
                     </div>
-                    <div class="form-group">
-                        <label for="edit-touch">Touch (%)</label>
-                        <input type="number" id="edit-touch" step="0.01" placeholder="Enter touch %">
-                    </div>
-                    <div class="form-group gold-purity-field" id="edit-gold-purity-field">
-                        <label for="edit-gold-purity">Gold Purity (Karat)</label>
-                        <input type="number" id="edit-gold-purity" step="0.01" placeholder="Enter gold purity (e.g., 22.5)">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-rate">Rate (per gram) *</label>
-                        <input type="number" id="edit-rate" step="0.01" placeholder="Enter rate">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-total">Total Amount</label>
-                        <input type="text" id="edit-total" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Transaction Type *</label>
-                        <div class="transaction-type">
-                            <label>
-                                <input type="radio" name="edit-transaction-type" value="buy"> 
-                                <span>Buy</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="edit-transaction-type" value="sell"> 
-                                <span>Sell</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Payment Method</label>
-                        <div class="transaction-type">
-                            <label>
-                                <input type="radio" name="edit-payment-method" value="cash"> 
-                                <span>Cash</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="edit-payment-method" value="exchange"> 
-                                <span>Exchange Gold</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div id="edit-cash-details" class="edit-section">
+                    
+                    <!-- Gold Transaction Fields -->
+                    <div id="edit-gold-details" class="edit-section">
                         <div class="form-group">
-                            <label for="edit-cash-given">Amount Given</label>
-                            <input type="number" id="edit-cash-given" step="0.01" placeholder="Enter amount given">
+                            <label for="edit-grams">Grams *</label>
+                            <input type="number" id="edit-grams" step="0.01" placeholder="Enter grams">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-touch">Touch (%)</label>
+                            <input type="number" id="edit-touch" step="0.01" placeholder="Enter touch %">
+                        </div>
+                        <div class="form-group gold-purity-field" id="edit-gold-purity-field">
+                            <label for="edit-gold-purity">Gold Purity (Karat)</label>
+                            <input type="number" id="edit-gold-purity" step="0.01" placeholder="Enter gold purity (e.g., 22.5)">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-rate">Rate (per gram) *</label>
+                            <input type="number" id="edit-rate" step="0.01" placeholder="Enter rate">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-total">Total Amount</label>
+                            <input type="text" id="edit-total" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Transaction Type *</label>
+                            <div class="transaction-type">
+                                <label>
+                                    <input type="radio" name="edit-transaction-type" value="buy"> 
+                                    <span>Buy</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="edit-transaction-type" value="sell"> 
+                                    <span>Sell</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <div class="transaction-type">
+                                <label>
+                                    <input type="radio" name="edit-payment-method" value="cash"> 
+                                    <span>Cash</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="edit-payment-method" value="exchange"> 
+                                    <span>Exchange Gold</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div id="edit-cash-details" class="edit-section">
+                            <div class="form-group">
+                                <label for="edit-cash-given">Amount Given</label>
+                                <input type="number" id="edit-cash-given" step="0.01" placeholder="Enter amount given">
+                            </div>
+                        </div>
+                        <div id="edit-exchange-details" class="edit-section">
+                            <div class="form-group">
+                                <label>Exchange Type</label>
+                                <div class="exchange-type">
+                                    <label>
+                                        <input type="radio" name="edit-exchange-type" value="Kacha"> 
+                                        <span>Kacha</span>
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="edit-exchange-type" value="Fine Gold"> 
+                                        <span>Fine Gold</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-exchange-grams">Gold Weight (grams)</label>
+                                <input type="number" id="edit-exchange-grams" step="0.01" placeholder="Enter grams">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-exchange-touch">Touch (%)</label>
+                                <input type="number" id="edit-exchange-touch" step="0.01" placeholder="Enter touch %">
+                            </div>
+                            <div class="form-group gold-purity-field" id="edit-exchange-gold-purity-field">
+                                <label for="edit-exchange-gold-purity">Gold Purity (Karat)</label>
+                                <input type="number" id="edit-exchange-gold-purity" step="0.01" placeholder="Enter gold purity (e.g., 22.5)">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-exchange-rate">Rate (per gram)</label>
+                                <input type="number" id="edit-exchange-rate" step="0.01" placeholder="Enter rate">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-exchange-total">Exchange Value</label>
+                                <input type="text" id="edit-exchange-total" readonly>
+                            </div>
                         </div>
                     </div>
-                    <div id="edit-exchange-details" class="edit-section">
+                    
+                    <!-- Cash Payment Fields -->
+                    <div id="edit-cash-payment-details" class="edit-section">
                         <div class="form-group">
-                            <label>Exchange Type</label>
+                            <label for="edit-cash-amount">Cash Amount *</label>
+                            <input type="number" id="edit-cash-amount" step="0.01" placeholder="Enter cash amount">
+                        </div>
+                        <div class="form-group">
+                            <label>Cash Direction *</label>
+                            <div class="cash-direction">
+                                <label>
+                                    <input type="radio" name="edit-cash-direction" value="in"> 
+                                    <span>Cash In</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="edit-cash-direction" value="out"> 
+                                    <span>Cash Out</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Exchange Gold Fields -->
+                    <div id="edit-exchange-gold-details" class="edit-section">
+                        <div class="form-group">
+                            <label>Exchange Type *</label>
                             <div class="exchange-type">
                                 <label>
-                                    <input type="radio" name="edit-exchange-type" value="Kacha"> 
+                                    <input type="radio" name="edit-exchange-gold-type" value="Kacha"> 
                                     <span>Kacha</span>
                                 </label>
                                 <label>
-                                    <input type="radio" name="edit-exchange-type" value="Fine Gold"> 
+                                    <input type="radio" name="edit-exchange-gold-type" value="Fine Gold"> 
                                     <span>Fine Gold</span>
                                 </label>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="edit-exchange-grams">Gold Weight (grams)</label>
-                            <input type="number" id="edit-exchange-grams" step="0.01" placeholder="Enter grams">
+                            <label>Exchange Direction *</label>
+                            <div class="exchange-direction">
+                                <label>
+                                    <input type="radio" name="edit-exchange-gold-direction" value="buy"> 
+                                    <span>Buy</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="edit-exchange-gold-direction" value="sell"> 
+                                    <span>Sell</span>
+                                </label>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="edit-exchange-touch">Touch (%)</label>
-                            <input type="number" id="edit-exchange-touch" step="0.01" placeholder="Enter touch %">
-                        </div>
-                        <div class="form-group gold-purity-field" id="edit-exchange-gold-purity-field">
-                            <label for="edit-exchange-gold-purity">Gold Purity (Karat)</label>
-                            <input type="number" id="edit-exchange-gold-purity" step="0.01" placeholder="Enter gold purity (e.g., 22.5)">
+                            <label for="edit-exchange-gold-grams">Gold Weight (grams) *</label>
+                            <input type="number" id="edit-exchange-gold-grams" step="0.01" placeholder="Enter grams">
                         </div>
                         <div class="form-group">
-                            <label for="edit-exchange-rate">Rate (per gram)</label>
-                            <input type="number" id="edit-exchange-rate" step="0.01" placeholder="Enter rate">
+                            <label for="edit-exchange-gold-touch">Touch (%)</label>
+                            <input type="number" id="edit-exchange-gold-touch" step="0.01" placeholder="Enter touch %">
                         </div>
-                        <div class="form-group">
-                            <label for="edit-exchange-total">Exchange Value</label>
-                            <input type="text" id="edit-exchange-total" readonly>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Cash Payment Fields -->
-                <div id="edit-cash-payment-details" class="edit-section">
-                    <div class="form-group">
-                        <label for="edit-cash-amount">Cash Amount *</label>
-                        <input type="number" id="edit-cash-amount" step="0.01" placeholder="Enter cash amount">
-                    </div>
-                    <div class="form-group">
-                        <label>Cash Direction *</label>
-                        <div class="cash-direction">
-                            <label>
-                                <input type="radio" name="edit-cash-direction" value="in"> 
-                                <span>Cash In</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="edit-cash-direction" value="out"> 
-                                <span>Cash Out</span>
-                            </label>
+                        <div class="form-group gold-purity-field" id="edit-exchange-gold-purity-main-field">
+                            <label for="edit-exchange-gold-purity-main">Gold Purity (Karat)</label>
+                            <input type="number" id="edit-exchange-gold-purity-main" step="0.01" placeholder="Enter gold purity (e.g., 22.5)">
                         </div>
                     </div>
-                </div>
-                
-                <!-- Exchange Gold Fields -->
-                <div id="edit-exchange-gold-details" class="edit-section">
-                    <div class="form-group">
-                        <label>Exchange Type *</label>
-                        <div class="exchange-type">
-                            <label>
-                                <input type="radio" name="edit-exchange-gold-type" value="Kacha"> 
-                                <span>Kacha</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="edit-exchange-gold-type" value="Fine Gold"> 
-                                <span>Fine Gold</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Exchange Direction *</label>
-                        <div class="exchange-direction">
-                            <label>
-                                <input type="radio" name="edit-exchange-gold-direction" value="buy"> 
-                                <span>Buy</span>
-                            </label>
-                            <label>
-                                <input type="radio" name="edit-exchange-gold-direction" value="sell"> 
-                                <span>Sell</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-exchange-gold-grams">Gold Weight (grams) *</label>
-                        <input type="number" id="edit-exchange-gold-grams" step="0.01" placeholder="Enter grams">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-exchange-gold-touch">Touch (%)</label>
-                        <input type="number" id="edit-exchange-gold-touch" step="0.01" placeholder="Enter touch %">
-                    </div>
-                    <div class="form-group gold-purity-field" id="edit-exchange-gold-purity-main-field">
-                        <label for="edit-exchange-gold-purity-main">Gold Purity (Karat)</label>
-                        <input type="number" id="edit-exchange-gold-purity-main" step="0.01" placeholder="Enter gold purity (e.g., 22.5)">
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-save"></i> Update Transaction
-                </button>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Delete Confirmation Modal -->
-    <div class="modal" id="delete-confirm-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Confirm Delete</h3>   
-                <button class="close-btn" id="close-delete-modal">&times;</button>
-            </div>
-            <div class="form-group">
-                <p>Are you sure you want to delete this transaction? This action cannot be undone.</p>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn" id="cancel-delete" style="flex: 1;">Cancel</button>
-                <button class="btn btn-primary" id="confirm-delete" style="flex: 1; background: #f44336;">Delete</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Firebase config
-        const firebaseConfig = {
-            apiKey: "AIzaSyAop6R33GJrzzl9WMyhQ1xQwYvJp4AHRIw",
-            authDomain: "kjgold-1ded4.firebaseapp.com",
-            projectId: "kjgold-1ded4",
-            storageBucket: "kjgold-1ded4.firebasestorage.app",
-            messagingSenderId: "547004315734",
-            appId: "1:547004315734:web:fed5dc819e42f5597d23f7",
-            measurementId: "G-B47GQ3ND0L"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        let currentCustomerId = null;
-        let currentCustomerName = null;
-        let allTransactions = [];
-        let transactionToDelete = null;
-        
-        auth.onAuthStateChanged((user) => {
-            if (!user) window.location.href = 'index.html';
-            else {
-                loadUserData(user.uid);
-                loadCustomers();
-            }
-        });
-        
-        function loadUserData(userId) {
-            db.collection('users').doc(userId).get().then((doc) => {
-                if (doc.exists) {
-                    const userData = doc.data();
-                    document.getElementById('mobile-username').textContent = userData.username;
-                    document.getElementById('desktop-username').textContent = userData.username;
-                    document.getElementById('username-display').textContent = `Welcome, ${userData.username}`;
-                }
-            });
-        }
-        
-        function loadCustomers() {
-            const customerList = document.getElementById('customer-list');
-            const loadingElement = document.getElementById('loading-customers');
-            const noCustomersElement = document.getElementById('no-customers');
-            const errorElement = document.getElementById('error-customers');
-            loadingElement.style.display = 'block';
-            noCustomersElement.style.display = 'none';
-            errorElement.style.display = 'none';
-            customerList.querySelectorAll('.customer-item').forEach(item => item.remove());
-            db.collection('customers')
-             .where("userId", "==", auth.currentUser.uid)
-             .orderBy("name")
-             .get()
-             .then(snapshot => {
-                loadingElement.style.display = 'none';
-                if (snapshot.empty) {
-                    noCustomersElement.style.display = 'block';
-                    return;
-                }
-                snapshot.forEach(doc => {
-                    const customer = doc.data();
-                    const customerItem = createCustomerElement(doc.id, customer);
-                    customerList.appendChild(customerItem);
-                });
-            }).catch(error => {
-                loadingElement.style.display = 'none';
-                errorElement.style.display = 'block';
-                errorElement.textContent = `Error: ${error.message}`;
-            });
-        }
-        
-        function createCustomerElement(id, customer) {
-            const customerItem = document.createElement('div');
-            customerItem.className = 'customer-item';
-            customerItem.dataset.id = id;
-            customerItem.innerHTML = `
-                <div class="customer-info">
-                    <h4>${customer.name}</h4>
-                    <p>${customer.phone}</p>
-                </div>
-                <div class="customer-actions">
-                    <button class="action-btn view-transactions" title="View Transactions">
-                        <i class="fas fa-list"></i>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-save"></i> Update Transaction
                     </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Delete Confirmation Modal -->
+        <div class="modal" id="delete-confirm-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Confirm Delete</h3>   
+                    <button class="close-btn" id="close-delete-modal">&times;</button>
                 </div>
-            `;
-            customerItem.querySelector('.view-transactions').addEventListener('click', (e) => {
-                e.stopPropagation();
-                viewCustomerTransactions(id, customer.name);
-            });
-            customerItem.addEventListener('click', () => {
-                viewCustomerTransactions(id, customer.name);
-            });
-            return customerItem;
-        }
-        
-        function viewCustomerTransactions(customerId, customerName) {
-            currentCustomerId = customerId;
-            currentCustomerName = customerName;
-            document.querySelector('.card').style.display = 'none';
-            document.getElementById('transactions-section').style.display = 'block';
-            document.getElementById('customer-transactions-title').textContent = `Transactions for ${customerName}`;
-            document.getElementById('summary-customer-name').textContent = customerName;
-            loadTransactions(customerId);
-        }
-        
-        document.getElementById('apply-filter').addEventListener('click', function() { filterAndRenderTransactions(); });
-        document.getElementById('clear-filter').addEventListener('click', function() {
-            document.getElementById('filter-month').value = '';
-            document.getElementById('filter-from').value = '';
-            document.getElementById('filter-to').value = '';
-            filterAndRenderTransactions();
-        });
-        
-        document.getElementById('print-summary').addEventListener('click', function() {
-            let title = "KJ GOLD";
-            let customerName = document.getElementById('summary-customer-name').textContent;
+                <div class="form-group">
+                    <p>Are you sure you want to delete this transaction? This action cannot be undone.</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" id="cancel-delete" style="flex: 1;">Cancel</button>
+                    <button class="btn btn-primary" id="confirm-delete" style="flex: 1; background: #f44336;">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Firebase config
+            const firebaseConfig = {
+                apiKey: "AIzaSyAop6R33GJrzzl9WMyhQ1xQwYvJp4AHRIw",
+                authDomain: "kjgold-1ded4.firebaseapp.com",
+                projectId: "kjgold-1ded4",
+                storageBucket: "kjgold-1ded4.firebasestorage.app",
+                messagingSenderId: "547004315734",
+                appId: "1:547004315734:web:fed5dc819e42f5597d23f7",
+                measurementId: "G-B47GQ3ND0L"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            let currentCustomerId = null;
+            let currentCustomerName = null;
+            let allTransactions = [];
+            let transactionToDelete = null;
             
-            // Create a temporary container to hold both elements
-            let tempContainer = document.createElement('div');
-            tempContainer.style.width = '1030px';
-            tempContainer.style.padding = '20px';
-            tempContainer.appendChild(document.getElementById('transactions-summary-section').cloneNode(true));
-            tempContainer.appendChild(document.getElementById('transactions-table').cloneNode(true));
-            document.body.appendChild(tempContainer);
-            
-            html2canvas(tempContainer).then(function(canvas) {
-                document.body.removeChild(tempContainer);
-                
-                let imgData = canvas.toDataURL('image/png');
-                const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
-                let w = pdf.internal.pageSize.getWidth();
-                let h = canvas.height * w / canvas.width;
-                
-                // Scale to fit on one page
-                if (h > pdf.internal.pageSize.getHeight()) {
-                    h = pdf.internal.pageSize.getHeight() - 20;
-                    w = canvas.width * h / canvas.height;
-                }
-                
-                pdf.setFontSize(22); 
-                pdf.text(title, w/2, 15, {align: "center"});
-                pdf.setFontSize(16); 
-                pdf.text("Customer: " + customerName, 10, 25);
-                pdf.addImage(imgData, 'PNG', 0, 30, w, h);
-                pdf.save('KJGold_'+customerName+'_transactions.pdf');
-            });
-        });
-        
-        function populateMonthFilter() {
-            let select = document.getElementById('filter-month');
-            let months = [];
-            allTransactions.forEach(tx => {
-                if (tx.createdAt) {
-                    let d = tx.createdAt.toDate();
-                    let val = d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2);
-                    if (!months.includes(val)) months.push(val);
+            auth.onAuthStateChanged((user) => {
+                if (!user) window.location.href = 'index.html';
+                else {
+                    loadUserData(user.uid);
+                    loadCustomers();
                 }
             });
-            select.innerHTML = '<option value="">All</option>';
-            months.sort().reverse().forEach(m => {
-                let [year, month] = m.split('-');
-                let name = new Date(year, month-1, 1).toLocaleString('default', {month:'long'}) + " " + year;
-                select.innerHTML += `<option value="${m}">${name}</option>`;
-            });
-        }
-        
-        function loadTransactions(customerId) {
-            const transactionsBody = document.getElementById('transactions-body');
-            const loadingElement = document.getElementById('loading-transactions');
-            const noTransactionsElement = document.getElementById('no-transactions');
-            const errorElement = document.getElementById('error-transactions');
-            const tableElement = document.getElementById('transactions-table');
-            loadingElement.style.display = 'block';
-            noTransactionsElement.style.display = 'none';
-            errorElement.style.display = 'none';
-            tableElement.style.display = 'none';
-            transactionsBody.innerHTML = '';
-            db.collection('transactions')
-                .where("customerId", "==", customerId)
-                .where("userId", "==", auth.currentUser.uid)
-                .orderBy("createdAt", "desc")
-                .get()
-                .then(snapshot => {
-                    loadingElement.style.display = 'none';
-                    allTransactions = [];
-                    if (snapshot.empty) {
-                        noTransactionsElement.style.display = 'block';
-                        updateSummaryResults([]);
-                        return;
+            
+            function loadUserData(userId) {
+                db.collection('users').doc(userId).get().then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        document.getElementById('mobile-username').textContent = userData.username;
+                        document.getElementById('desktop-username').textContent = userData.username;
+                        document.getElementById('username-display').textContent = `Welcome, ${userData.username}`;
                     }
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        data.id = doc.id; // Store the document ID
-                        allTransactions.push(data);
-                    });
-                    populateMonthFilter();
-                    filterAndRenderTransactions();
-                })
-                .catch(error => {
-                    loadingElement.style.display = 'none';
-                    errorElement.style.display = 'block';
-                    errorElement.textContent = `Error: ${error.message}`;
                 });
-        }
+            }
+            function loadCustomers() {
+        const customerList = document.getElementById('customer-list');
+        const loadingElement = document.getElementById('loading-customers');
+        const noCustomersElement = document.getElementById('no-customers');
+        const errorElement = document.getElementById('error-customers');
         
-        function filterAndRenderTransactions() {
-            let monthVal = document.getElementById('filter-month').value;
-            let fromVal = document.getElementById('filter-from').value;
-            let toVal = document.getElementById('filter-to').value;
-            let filtered = allTransactions.filter(tx => {
-                if (!tx.createdAt) return false;
-                let d = tx.createdAt.toDate();
-                if (monthVal) {
-                    let mval = d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2);
-                    if (mval !== monthVal) return false;
-                }
-                if (fromVal) {
-                    let fromDate = new Date(fromVal);
-                    if (d < fromDate) return false;
-                }
-                if (toVal) {
-                    let toDate = new Date(toVal);
-                    if (d > toDate) return false;
-                }
-                return true;
-            });
-            renderTransactionsTable(filtered);
-            updateSummaryResults(filtered);
-        }
+        loadingElement.style.display = 'block';
+        noCustomersElement.style.display = 'none';
+        errorElement.style.display = 'none';
         
-        function renderTransactionsTable(transactions) {
-            const transactionsBody = document.getElementById('transactions-body');
-            const tableElement = document.getElementById('transactions-table');
-            const noTransactionsElement = document.getElementById('no-transactions');
-            transactionsBody.innerHTML = '';
-            
-            // Initialize totals
-            let totalCashIn = 0;
-            let totalCashOut = 0;
-            let totalGoldIn = 0;
-            let totalGoldOut = 0;
-            
-            if (transactions.length === 0) {
-                tableElement.style.display = 'none';
-                noTransactionsElement.style.display = 'block';
+        // Clear existing customer items
+        const customerItems = customerList.querySelectorAll('.customer-item');
+        customerItems.forEach(item => item.remove());
+        
+        db.collection('customers')
+        .where("userId", "==", auth.currentUser.uid)
+        .orderBy("name")
+        .get()
+        .then(snapshot => {
+            loadingElement.style.display = 'none';
+            if (snapshot.empty) {
+                noCustomersElement.style.display = 'block';
                 return;
             }
+            snapshot.forEach(doc => {
+                const customer = doc.data();
+                const customerItem = createCustomerElement(doc.id, customer);
+                customerList.appendChild(customerItem);
+            });
+        }).catch(error => {
+            loadingElement.style.display = 'none';
+            errorElement.style.display = 'block';
+            errorElement.textContent = `Error: ${error.message}`;
+            console.error("Error loading customers:", error);
+        });
+    }
             
-            tableElement.style.display = 'table';
-            noTransactionsElement.style.display = 'none';
             
-            transactions.forEach(transaction => {
-                const row = createTransactionRow(transaction);
-                transactionsBody.appendChild(row);
-                
-                // Calculate totals
-                switch(transaction.type) {
-                    case 'Kacha':
-                    case 'Fine Gold':
-                        if (transaction.transactionType === 'buy') {
-                            if (transaction.paymentMethod === 'cash') {
-                                totalCashOut += parseFloat(transaction.cashGiven) || 0;
-                            }
-                            totalGoldIn += parseFloat(transaction.grams) || 0;
-                        } else if (transaction.transactionType === 'sell') {
-                            if (transaction.paymentMethod === 'cash') {
-                                totalCashIn += parseFloat(transaction.cashGiven) || 0;
-                            }
-                            totalGoldOut += parseFloat(transaction.grams) || 0;
-                        }
-                        break;
-                        
-                    case 'Cash Payment':
-                        if (transaction.cashDirection === 'in') {
-                            totalCashIn += parseFloat(transaction.cashAmount) || 0;
-                        } else if (transaction.cashDirection === 'out') {
-                            totalCashOut += parseFloat(transaction.cashAmount) || 0;
-                        }
-                        break;
-                        
-                    case 'Exchange Gold':
-                        if (transaction.exchangeGoldDirection === 'buy') {
-                            totalGoldIn += parseFloat(transaction.exchangeGrams) || 0;
-                        } else if (transaction.exchangeGoldDirection === 'sell') {
-                            totalGoldOut += parseFloat(transaction.exchangeGrams) || 0;
-                        }
-                        break;
-                }
+            function createCustomerElement(id, customer) {
+                const customerItem = document.createElement('div');
+                customerItem.className = 'customer-item';
+                customerItem.dataset.id = id;
+                customerItem.innerHTML = `
+                    <div class="customer-info">
+                        <h4>${customer.name}</h4>
+                        <p>${customer.phone}</p>
+                    </div>
+                    <div class="customer-actions">
+                        <button class="action-btn view-transactions" title="View Transactions">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                `;
+                customerItem.querySelector('.view-transactions').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    viewCustomerTransactions(id, customer.name);
+                });
+                customerItem.addEventListener('click', () => {
+                    viewCustomerTransactions(id, customer.name);
+                });
+                return customerItem;
+            }
+            
+            function viewCustomerTransactions(customerId, customerName) {
+                currentCustomerId = customerId;
+                currentCustomerName = customerName;
+                document.querySelector('.card').style.display = 'none';
+                document.getElementById('transactions-section').style.display = 'block';
+                document.getElementById('customer-transactions-title').textContent = `Transactions for ${customerName}`;
+                document.getElementById('summary-customer-name').textContent = customerName;
+                loadTransactions(customerId);
+            }
+            
+            document.getElementById('apply-filter').addEventListener('click', function() { filterAndRenderTransactions(); });
+            document.getElementById('clear-filter').addEventListener('click', function() {
+                document.getElementById('filter-month').value = '';
+                document.getElementById('filter-from').value = '';
+                document.getElementById('filter-to').value = '';
+                filterAndRenderTransactions();
             });
             
-            // Update footer with totals
-            document.getElementById('total-cash-in').textContent = totalCashIn.toFixed(2);
-            document.getElementById('total-cash-out').textContent = totalCashOut.toFixed(2);
-            document.getElementById('total-gold-in').textContent = totalGoldIn.toFixed(3);
-            document.getElementById('total-gold-out').textContent = totalGoldOut.toFixed(3);
-        }
-        
-        // SIMPLIFIED AND CORRECTED SUMMARY CALCULATION
-        function updateSummaryResults(transactions) {
-            let moneyBalance = 0;
-            let goldBalance = 0;
+            document.getElementById('print-summary').addEventListener('click', function() {
+                generatePDF();
+            });
             
-            transactions.forEach(transaction => {
-                switch(transaction.type) {
-                    case 'Kacha':
-                    case 'Fine Gold':
-                        // Gold transactions
-                        if (transaction.transactionType === 'buy') {
-                            // We buy gold from customer
-                            moneyBalance -= parseFloat(transaction.total) || 0;
-                            goldBalance += parseFloat(transaction.grams) || 0;
-                            
-                            if (transaction.paymentMethod === 'cash') {
-                                moneyBalance += parseFloat(transaction.cashGiven) || 0;
-                            } else if (transaction.paymentMethod === 'exchange') {
-                                goldBalance -= parseFloat(transaction.exchangeGrams) || 0;
-                                moneyBalance += parseFloat(transaction.exchangeTotal) || 0;
+            // NEW FUNCTION: Generate PDF with proper pagination
+            function generatePDF() {
+            // Get the transactions table element
+            const tableElement = document.getElementById('transactions-table');
+            
+            // Create a temporary container for PDF generation
+            const pdfContainer = document.createElement('div');
+            pdfContainer.style.position = 'absolute';
+            pdfContainer.style.left = '-9999px';
+            pdfContainer.style.width = '1200px'; // Wider for landscape
+            pdfContainer.style.padding = '20px';
+            pdfContainer.style.backgroundColor = 'white';
+            
+            // Add header
+            const header = document.createElement('div');
+            header.className = 'pdf-header';
+            header.innerHTML = `
+                <h1 style="color: #d4af37; text-align: center; margin-bottom: 10px;">KJ GOLD</h1>
+                <h2 style="text-align: center; margin-bottom: 5px;">Transaction Summary</h2>
+                <p style="text-align: center;">Customer: ${currentCustomerName}</p>
+            `;
+            pdfContainer.appendChild(header);
+            
+            // Clone the table
+            const tableClone = tableElement.cloneNode(true);
+            pdfContainer.appendChild(tableClone);
+            
+            // Add summary section
+            const summarySection = document.createElement('div');
+            summarySection.innerHTML = `
+                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <h3 style="color: #d4af37; margin-bottom: 10px;">Summary</h3>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>
+                            <p><strong>Total Cash In:</strong> <span id="pdf-total-cash-in">${document.getElementById('total-cash-in').textContent}</span></p>
+                            <p><strong>Total Cash Out:</strong> <span id="pdf-total-cash-out">${document.getElementById('total-cash-out').textContent}</span></p>
+                        </div>
+                        <div>
+                            <p><strong>Total Gold In:</strong> <span id="pdf-total-gold-in">${document.getElementById('total-gold-in').textContent}</span></p>
+                            <p><strong>Total Gold Out:</strong> <span id="pdf-total-gold-out">${document.getElementById('total-gold-out').textContent}</span></p>
+                        </div>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
+                    Generated on: ${new Date().toLocaleString()}
+                </p>
+            `;
+            pdfContainer.appendChild(summarySection);
+            
+            // Add to document
+            document.body.appendChild(pdfContainer);
+            
+            // Use html2canvas to capture the content
+            html2canvas(pdfContainer, {
+                scale: 2, // Higher quality
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                // Remove the temporary container
+                document.body.removeChild(pdfContainer);
+                
+                // Convert canvas to image data
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                
+                // Calculate content height to determine page size
+                const contentHeight = canvas.height;
+                const contentWidth = canvas.width;
+                
+                // PDF dimensions - use standard sizes based on content height
+                const { jsPDF } = window.jspdf;
+                
+                // Choose page size based on content height
+                let pdf;
+                const aspectRatio = contentWidth / contentHeight;
+                
+                if (contentHeight <= 842) { // A4 height in points (11.69in * 72ppi)
+                    // Use A4 for smaller content
+                    pdf = new jsPDF('p', 'pt', 'a4');
+                } else if (contentHeight <= 1191) { // A3 height
+                    // Use A3 for medium content
+                    pdf = new jsPDF('l', 'pt', 'a3');
+                } else {
+                    // Use a custom size for very large content
+                    // Maintain aspect ratio but limit to reasonable maximum
+                    const maxHeight = 2000;
+                    const calculatedWidth = maxHeight * aspectRatio;
+                    pdf = new jsPDF('l', 'pt', [calculatedWidth, maxHeight]);
+                }
+                
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                
+                // Calculate scaling to fit content to page width
+                const widthRatio = pdfWidth / contentWidth;
+                const heightRatio = pdfHeight / contentHeight;
+                const ratio = Math.min(widthRatio, heightRatio);
+                
+                // Calculate position to center the image
+                const scaledWidth = contentWidth * ratio;
+                const scaledHeight = contentHeight * ratio;
+                const x = (pdfWidth - scaledWidth) / 2;
+                const y = (pdfHeight - scaledHeight) / 2;
+                
+                // Add image to PDF
+                pdf.addImage(imgData, 'JPEG', x, y, scaledWidth, scaledHeight);
+                
+                // Save the PDF
+                const fileName = `KJ_GOLD_${currentCustomerName.replace(/\s+/g, '_')}_Transactions_${new Date().toISOString().slice(0, 10)}.pdf`;
+                pdf.save(fileName);
+            });
+        }
+            function populateMonthFilter() {
+                let select = document.getElementById('filter-month');
+                let months = [];
+                allTransactions.forEach(tx => {
+                    if (tx.createdAt) {
+                        let d = tx.createdAt.toDate();
+                        let val = d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2);
+                        if (!months.includes(val)) months.push(val);
+                    }
+                });
+                select.innerHTML = '<option value="">All</option>';
+                months.sort().reverse().forEach(m => {
+                    let [year, month] = m.split('-');
+                    let name = new Date(year, month-1, 1).toLocaleString('default', {month:'long'}) + " " + year;
+                    select.innerHTML += `<option value="${m}">${name}</option>`;
+                });
+            }
+            
+            function loadTransactions(customerId) {
+                const transactionsBody = document.getElementById('transactions-body');
+                const loadingElement = document.getElementById('loading-transactions');
+                const noTransactionsElement = document.getElementById('no-transactions');
+                const errorElement = document.getElementById('error-transactions');
+                const tableElement = document.getElementById('transactions-table');
+                loadingElement.style.display = 'block';
+                noTransactionsElement.style.display = 'none';
+                errorElement.style.display = 'none';
+                tableElement.style.display = 'none';
+                transactionsBody.innerHTML = '';
+                db.collection('transactions')
+                    .where("customerId", "==", customerId)
+                    .where("userId", "==", auth.currentUser.uid)
+                    .orderBy("createdAt", "desc")
+                    .get()
+                    .then(snapshot => {
+                        loadingElement.style.display = 'none';
+                        allTransactions = [];
+                        if (snapshot.empty) {
+                            noTransactionsElement.style.display = 'block';
+                            updateSummaryResults([]);
+                            return;
+                        }
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            data.id = doc.id; // Store the document ID
+                            allTransactions.push(data);
+                        });
+                        populateMonthFilter();
+                        filterAndRenderTransactions();
+                    })
+                    .catch(error => {
+                        loadingElement.style.display = 'none';
+                        errorElement.style.display = 'block';
+                        errorElement.textContent = `Error: ${error.message}`;
+                    });
+            }
+            
+            function filterAndRenderTransactions() {
+                let monthVal = document.getElementById('filter-month').value;
+                let fromVal = document.getElementById('filter-from').value;
+                let toVal = document.getElementById('filter-to').value;
+                let filtered = allTransactions.filter(tx => {
+                    if (!tx.createdAt) return false;
+                    let d = tx.createdAt.toDate();
+                    if (monthVal) {
+                        let mval = d.getFullYear() + "-" + ("0" + (d.getMonth()+1)).slice(-2);
+                        if (mval !== monthVal) return false;
+                    }
+                    if (fromVal) {
+                        let fromDate = new Date(fromVal);
+                        if (d < fromDate) return false;
+                    }
+                    if (toVal) {
+                        let toDate = new Date(toVal);
+                        if (d > toDate) return false;
+                    }
+                    return true;
+                });
+                renderTransactionsTable(filtered);
+                updateSummaryResults(filtered);
+            }
+            
+            function renderTransactionsTable(transactions) {
+                const transactionsBody = document.getElementById('transactions-body');
+                const tableElement = document.getElementById('transactions-table');
+                const noTransactionsElement = document.getElementById('no-transactions');
+                transactionsBody.innerHTML = '';
+                
+                // Initialize totals
+                let totalCashIn = 0;
+                let totalCashOut = 0;
+                let totalGoldIn = 0;
+                let totalGoldOut = 0;
+                
+                if (transactions.length === 0) {
+                    tableElement.style.display = 'none';
+                    noTransactionsElement.style.display = 'block';
+                    return;
+                }
+                
+                tableElement.style.display = 'table';
+                noTransactionsElement.style.display = 'none';
+                
+                transactions.forEach(transaction => {
+                    const row = createTransactionRow(transaction);
+                    transactionsBody.appendChild(row);
+                    
+                    // Calculate totals
+                    switch(transaction.type) {
+                        case 'Kacha':
+                        case 'Fine Gold':
+                            if (transaction.transactionType === 'buy') {
+                                if (transaction.paymentMethod === 'cash') {
+                                    totalCashOut += parseFloat(transaction.cashGiven) || 0;
+                                }
+                                totalGoldIn += parseFloat(transaction.grams) || 0;
+                            } else if (transaction.transactionType === 'sell') {
+                                if (transaction.paymentMethod === 'cash') {
+                                    totalCashIn += parseFloat(transaction.cashGiven) || 0;
+                                }
+                                totalGoldOut += parseFloat(transaction.grams) || 0;
                             }
-                        } else if (transaction.transactionType === 'sell') {
-                            // We sell gold to customer
-                            moneyBalance += parseFloat(transaction.total) || 0;
-                            goldBalance -= parseFloat(transaction.grams) || 0;
+                            break;
                             
-                            if (transaction.paymentMethod === 'cash') {
-                                moneyBalance -= parseFloat(transaction.cashGiven) || 0;
-                            } else if (transaction.paymentMethod === 'exchange') {
+                        case 'Cash Payment':
+                            if (transaction.cashDirection === 'in') {
+                                totalCashIn += parseFloat(transaction.cashAmount) || 0;
+                            } else if (transaction.cashDirection === 'out') {
+                                totalCashOut += parseFloat(transaction.cashAmount) || 0;
+                            }
+                            break;
+                            
+                        case 'Exchange Gold':
+                            if (transaction.exchangeGoldDirection === 'buy') {
+                                totalGoldIn += parseFloat(transaction.exchangeGrams) || 0;
+                            } else if (transaction.exchangeGoldDirection === 'sell') {
+                                totalGoldOut += parseFloat(transaction.exchangeGrams) || 0;
+                            }
+                            break;
+                    }
+                });
+                
+                // Update footer with totals
+                document.getElementById('total-cash-in').textContent = totalCashIn.toFixed(2);
+                document.getElementById('total-cash-out').textContent = totalCashOut.toFixed(2);
+                document.getElementById('total-gold-in').textContent = totalGoldIn.toFixed(3);
+                document.getElementById('total-gold-out').textContent = totalGoldOut.toFixed(3);
+            }
+            
+            // SIMPLIFIED AND CORRECTED SUMMARY CALCULATION
+            function updateSummaryResults(transactions) {
+                let moneyBalance = 0;
+                let goldBalance = 0;
+                
+                transactions.forEach(transaction => {
+                    switch(transaction.type) {
+                        case 'Kacha':
+                        case 'Fine Gold':
+                            // Gold transactions
+                            if (transaction.transactionType === 'buy') {
+                                // We buy gold from customer
+                                moneyBalance -= parseFloat(transaction.total) || 0;
+                                goldBalance += parseFloat(transaction.grams) || 0;
+                                
+                                if (transaction.paymentMethod === 'cash') {
+                                    moneyBalance += parseFloat(transaction.cashGiven) || 0;
+                                } else if (transaction.paymentMethod === 'exchange') {
+                                    goldBalance -= parseFloat(transaction.exchangeGrams) || 0;
+                                    moneyBalance += parseFloat(transaction.exchangeTotal) || 0;
+                                }
+                            } else if (transaction.transactionType === 'sell') {
+                                // We sell gold to customer
+                                moneyBalance += parseFloat(transaction.total) || 0;
+                                goldBalance -= parseFloat(transaction.grams) || 0;
+                                
+                                if (transaction.paymentMethod === 'cash') {
+                                    moneyBalance -= parseFloat(transaction.cashGiven) || 0;
+                                } else if (transaction.paymentMethod === 'exchange') {
+                                    goldBalance += parseFloat(transaction.exchangeGrams) || 0;
+                                    moneyBalance -= parseFloat(transaction.exchangeTotal) || 0;
+                                }
+                            }
+                            break;
+                            
+                        case 'Cash Payment':
+                            // Cash transactions
+                            if (transaction.cashDirection === 'in') {
+                                // Customer gives us cash
+                                moneyBalance += parseFloat(transaction.cashAmount) || 0;
+                            } else if (transaction.cashDirection === 'out') {
+                                // We give cash to customer
+                                moneyBalance -= parseFloat(transaction.cashAmount) || 0;
+                            }
+                            break;
+                            
+                        case 'Exchange Gold':
+                            // Pure gold exchange
+                            if (transaction.exchangeGoldDirection === 'buy') {
+                                // We receive gold from customer
                                 goldBalance += parseFloat(transaction.exchangeGrams) || 0;
-                                moneyBalance -= parseFloat(transaction.exchangeTotal) || 0;
+                            } else if (transaction.exchangeGoldDirection === 'sell') {
+                                // We give gold to customer
+                                goldBalance -= parseFloat(transaction.exchangeGrams) || 0;
+                            }
+                            break;
+                    }
+                });
+                
+                // Update the summary display with proper color coding
+                const moneyBalanceEl = document.getElementById('money-balance');
+                const goldBalanceEl = document.getElementById('gold-balance');
+                
+                // Money balance: positive means customer owes us, negative means we owe customer
+                if (moneyBalance >= 0) {
+                    moneyBalanceEl.textContent = `Customer owes: ₹${moneyBalance.toFixed(2)}`;
+                    moneyBalanceEl.className = 'customer-owes';
+                } else {
+                    moneyBalanceEl.textContent = `We owe customer: ₹${Math.abs(moneyBalance).toFixed(2)}`;
+                    moneyBalanceEl.className = 'we-owe';
+                }
+                
+                // Gold balance: positive means we have customer's gold, negative means we owe gold
+                if (goldBalance >= 0) {
+                    goldBalanceEl.textContent = `We hold: ${goldBalance.toFixed(3)} g`;
+                    goldBalanceEl.className = 'customer-owes';
+                } else {
+                    goldBalanceEl.textContent = `We owe: ${Math.abs(goldBalance).toFixed(3)} g`;
+                    goldBalanceEl.className = 'we-owe';
+                }
+            }
+    function createTransactionRow(transaction) {
+        const row = document.createElement('tr');
+        let dateString = 'N/A';
+        if (transaction.createdAt) {
+            const date = transaction.createdAt.toDate();
+            dateString = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+        }
+        
+        // Initialize values for the new columns
+        let cashIn = '';
+        let cashOut = '';
+        let goldIn = '';
+        let goldOut = '';
+        
+        // Set default values for display
+        let displayType = transaction.type || 'N/A';
+        let displayGrams = transaction.grams || 'N/A';
+        let displayTouch = transaction.touch || 'N/A';
+        let displayRate = transaction.rate || 'N/A';
+        let displayTotal = transaction.total || 'N/A';
+        let transactionTypeDisplay = 'N/A';
+        let pureGoldGrams = 'N/A';
+        
+        // Handle different transaction types
+        switch(transaction.type) {
+            case 'Kacha':
+            case 'Fine Gold':
+                // Gold transactions
+                if (transaction.transactionType === 'buy') {
+                    // We're buying from customer
+                    if (transaction.paymentMethod === 'cash') {
+                        cashOut = `₹${transaction.cashGiven ? Number(transaction.cashGiven).toFixed(2) : '0.00'}`;
+                    } else if (transaction.paymentMethod === 'exchange') {
+                        // For Kacha/Fine Gold with exchange, show exchange values in Gold In/Gold Out
+                        goldIn = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'}`;
+                    }
+                    // Don't show the main grams in Gold In/Gold Out for Kacha/Fine Gold
+                    
+                } else if (transaction.transactionType === 'sell') {
+                    // We're selling to customer
+                    if (transaction.paymentMethod === 'cash') {
+                        cashIn = `₹${transaction.cashGiven ? Number(transaction.cashGiven).toFixed(2) : '0.00'}`;
+                    } else if (transaction.paymentMethod === 'exchange') {
+                        // For Kacha/Fine Gold with exchange, show exchange values in Gold In/Gold Out
+                        goldOut = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'}`;
+                    }
+                    // Don't show the main grams in Gold In/Gold Out for Kacha/Fine Gold
+                }
+                
+                transactionTypeDisplay = transaction.transactionType || 'N/A';
+                
+                // Calculate pure gold grams
+                if (transaction.grams && transaction.touch) {
+                    const pureGrams = (Number(transaction.grams) * Number(transaction.touch)) / 100;
+                    pureGoldGrams = pureGrams.toFixed(3);
+                } else if (transaction.type === 'Fine Gold' && transaction.grams) {
+                    // Fine Gold is 100% pure
+                    pureGoldGrams = Number(transaction.grams).toFixed(3);
+                }
+                break;
+                
+            case 'Cash Payment':
+                // Cash transactions
+                if (transaction.cashDirection === 'in') {
+                    cashIn = `₹${transaction.cashAmount ? Number(transaction.cashAmount).toFixed(2) : '0.00'}`;
+                } else if (transaction.cashDirection === 'out') {
+                    cashOut = `₹${transaction.cashAmount ? Number(transaction.cashAmount).toFixed(2) : '0.00'}`;
+                }
+                
+                transactionTypeDisplay = transaction.cashDirection || 'N/A';
+                break;
+                
+            case 'Exchange Gold':
+                // Pure gold exchange - show only "Exchange Gold" in type column
+                displayType = 'Exchange Gold';
+                
+                const direction = transaction.exchangeGoldDirection || 
+                                (transaction.exchangeGoldDirection === 'buy' ? 'buy' : 
+                                transaction.exchangeGoldDirection === 'sell' ? 'sell' : 'unknown');
+                
+                if (direction === 'buy') {
+                    // We're buying gold from customer
+                    goldIn = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'}`;
+                    transactionTypeDisplay = 'buy';
+                } else if (direction === 'sell') {
+                    // We're selling gold to customer
+                    goldOut = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'}`;
+                    transactionTypeDisplay = 'sell';
+                } else {
+                    // If we can't determine, show the raw value
+                    transactionTypeDisplay = transaction.exchangeGoldDirection || 'unknown';
+                }
+                
+                // For Exchange Gold, use exchangeGrams in the grams column
+                displayGrams = transaction.exchangeGrams || 'N/A';
+                
+                // For Exchange Gold, use exchangeTouch in the touch column
+                displayTouch = transaction.exchangeTouch || transaction.touch || 'N/A';
+                
+                // Calculate pure gold grams for Exchange Gold
+                if (transaction.exchangeGrams && transaction.exchangeTouch) {
+                    const pureGrams = (Number(transaction.exchangeGrams) * Number(transaction.exchangeTouch)) / 100;
+                    pureGoldGrams = pureGrams.toFixed(3);
+                } else if (transaction.exchangeType === 'Fine Gold' && transaction.exchangeGrams) {
+                    // Fine Gold is 100% pure
+                    pureGoldGrams = Number(transaction.exchangeGrams).toFixed(3);
+                } else if (transaction.exchangeGrams) {
+                    // If no touch percentage, assume 100% pure
+                    pureGoldGrams = Number(transaction.exchangeGrams).toFixed(3);
+                }
+                break;
+        }
+        
+        // Format numeric values
+        if (displayGrams !== 'N/A') displayGrams = Number(displayGrams).toFixed(3);
+        if (displayTouch !== 'N/A') displayTouch = Number(displayTouch).toFixed(1) + '%';
+        if (displayRate !== 'N/A') displayRate = '₹' + Number(displayRate).toFixed(2);
+        if (displayTotal !== 'N/A') displayTotal = '₹' + Number(displayTotal).toFixed(2);
+        
+        row.innerHTML = `
+            <td>${dateString}</td>
+            <td>${displayType}</td>
+            <td>${displayGrams}</td>
+            <td>${displayTouch}</td>
+            <td>${pureGoldGrams}</td>
+            <td>${displayRate}</td>
+            <td>${displayTotal}</td>
+            <td>${transactionTypeDisplay}</td>
+            <td>${cashIn}</td>
+            <td>${cashOut}</td>
+            <td>${goldIn}</td>
+            <td>${goldOut}</td>
+            <td class="transaction-actions">
+                <button class="edit-btn" data-id="${transaction.id}">Edit</button>
+                <button class="delete-btn" data-id="${transaction.id}">Delete</button>
+            </td>
+        `;
+        
+        // Add event listeners for edit and delete buttons
+        row.querySelector('.edit-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            editTransaction(transaction);
+        });
+        
+        row.querySelector('.delete-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            confirmDeleteTransaction(transaction);
+        });
+        
+        return row;
+    }
+            // Edit transaction function
+            function editTransaction(transaction) {
+                // Populate the form with transaction data
+                document.getElementById('edit-transaction-id').value = transaction.id;
+                document.getElementById('edit-type').value = transaction.type || '';
+                
+                // Show/hide appropriate sections based on transaction type
+                toggleEditSections(transaction.type);
+                
+                // Populate fields based on transaction type
+                if (transaction.type === 'Kacha' || transaction.type === 'Fine Gold') {
+                    document.getElementById('edit-grams').value = transaction.grams || '';
+                    document.getElementById('edit-touch').value = transaction.touch || '';
+                    document.getElementById('edit-gold-purity').value = transaction.goldPurity || '';
+                    document.getElementById('edit-rate').value = transaction.rate || '';
+                    document.getElementById('edit-total').value = transaction.total || '';
+                    
+                    // Show gold purity field only for Kacha
+                    if (transaction.type === 'Kacha') {
+                        document.getElementById('edit-gold-purity-field').style.display = 'block';
+                    } else {
+                        document.getElementById('edit-gold-purity-field').style.display = 'none';
+                    }
+                    
+                    // Set transaction type
+                    if (transaction.transactionType) {
+                        document.querySelector(`input[name="edit-transaction-type"][value="${transaction.transactionType}"]`).checked = true;
+                    }
+                    
+                    // Set payment method and populate relevant fields
+                    if (transaction.paymentMethod) {
+                        document.querySelector(`input[name="edit-payment-method"][value="${transaction.paymentMethod}"]`).checked = true;
+                        
+                        if (transaction.paymentMethod === 'cash') {
+                            document.getElementById('edit-cash-given').value = transaction.cashGiven || '';
+                            document.getElementById('edit-cash-details').style.display = 'block';
+                        } else if (transaction.paymentMethod === 'exchange') {
+                            document.querySelector(`input[name="edit-exchange-type"][value="${transaction.exchangeType}"]`).checked = true;
+                            document.getElementById('edit-exchange-grams').value = transaction.exchangeGrams || '';
+                            document.getElementById('edit-exchange-touch').value = transaction.exchangeTouch || '';
+                            document.getElementById('edit-exchange-gold-purity').value = transaction.exchangeGoldPurity || '';
+                            document.getElementById('edit-exchange-rate').value = transaction.exchangeRate || '';
+                            document.getElementById('edit-exchange-total').value = transaction.exchangeTotal || '';
+                            document.getElementById('edit-exchange-details').style.display = 'block';
+                            
+                            // Show gold purity field only for Kacha in exchange
+                            if (transaction.exchangeType === 'Kacha') {
+                                document.getElementById('edit-exchange-gold-purity-field').style.display = 'block';
+                            } else {
+                                document.getElementById('edit-exchange-gold-purity-field').style.display = 'none';
                             }
                         }
-                        break;
+                    }
+                } else if (transaction.type === 'Cash Payment') {
+                    document.getElementById('edit-cash-amount').value = transaction.cashAmount || '';
+                    if (transaction.cashDirection) {
+                        document.querySelector(`input[name="edit-cash-direction"][value="${transaction.cashDirection}"]`).checked = true;
+                    }
+                } else if (transaction.type === 'Exchange Gold') {
+                    document.getElementById('edit-exchange-gold-grams').value = transaction.exchangeGrams || '';
+                    document.getElementById('edit-exchange-gold-touch').value = transaction.exchangeTouch || '';
+                    document.getElementById('edit-exchange-gold-purity-main').value = transaction.goldPurity || '';
+                    
+                    if (transaction.exchangeGoldDirection) {
+                        document.querySelector(`input[name="edit-exchange-gold-direction"][value="${transaction.exchangeGoldDirection}"]`).checked = true;
+                    }
+                    
+                    if (transaction.exchangeType) {
+                        document.querySelector(`input[name="edit-exchange-gold-type"][value="${transaction.exchangeType}"]`).checked = true;
                         
-                    case 'Cash Payment':
-                        // Cash transactions
-                        if (transaction.cashDirection === 'in') {
-                            // Customer gives us cash
-                            moneyBalance += parseFloat(transaction.cashAmount) || 0;
-                        } else if (transaction.cashDirection === 'out') {
-                            // We give cash to customer
-                            moneyBalance -= parseFloat(transaction.cashAmount) || 0;
+                        // Show gold purity field only for Kacha
+                        if (transaction.exchangeType === 'Kacha') {
+                            document.getElementById('edit-exchange-gold-purity-main-field').style.display = 'block';
+                        } else {
+                            document.getElementById('edit-exchange-gold-purity-main-field').style.display = 'none';
                         }
-                        break;
-                        
-                    case 'Exchange Gold':
-                        // Pure gold exchange
-                        if (transaction.exchangeGoldDirection === 'buy') {
-                            // We receive gold from customer
-                            goldBalance += parseFloat(transaction.exchangeGrams) || 0;
-                        } else if (transaction.exchangeGoldDirection === 'sell') {
-                            // We give gold to customer
-                            goldBalance -= parseFloat(transaction.exchangeGrams) || 0;
-                        }
-                        break;
+                    }
                 }
+                
+                // Show the edit modal
+                document.getElementById('edit-transaction-modal').classList.add('show');
+            }
+            
+            // Toggle edit sections based on transaction type
+            function toggleEditSections(type) {
+                // Hide all sections first
+                document.getElementById('edit-gold-details').style.display = 'none';
+                document.getElementById('edit-cash-payment-details').style.display = 'none';
+                document.getElementById('edit-exchange-gold-details').style.display = 'none';
+                document.getElementById('edit-cash-details').style.display = 'none';
+                document.getElementById('edit-exchange-details').style.display = 'none';
+                
+                // Show the relevant section
+                if (type === 'Kacha' || type === 'Fine Gold') {
+                    document.getElementById('edit-gold-details').style.display = 'block';
+                } else if (type === 'Cash Payment') {
+                    document.getElementById('edit-cash-payment-details').style.display = 'block';
+                } else if (type === 'Exchange Gold') {
+                    document.getElementById('edit-exchange-gold-details').style.display = 'block';
+                }
+            }
+            
+            // Confirm delete transaction
+            function confirmDeleteTransaction(transaction) {
+                transactionToDelete = transaction;
+                document.getElementById('delete-confirm-modal').classList.add('show');
+            }
+            
+            // Delete transaction function
+            function deleteTransaction(transactionId) {
+                db.collection('transactions').doc(transactionId).delete()
+                    .then(() => {
+                        alert('Transaction deleted successfully!');
+                        // Reload transactions
+                        loadTransactions(currentCustomerId);
+                        document.getElementById('delete-confirm-modal').classList.remove('show');
+                    })
+                    .catch(error => {
+                        alert('Error deleting transaction: ' + error.message);
+                        document.getElementById('delete-confirm-modal').classList.remove('show');
+                    });
+            }
+            
+            // Update transaction function
+            function updateTransaction(transactionId, transactionData) {
+                db.collection('transactions').doc(transactionId).update(transactionData)
+                    .then(() => {
+                        alert('Transaction updated successfully!');
+                        // Reload transactions
+                        loadTransactions(currentCustomerId);
+                        document.getElementById('edit-transaction-modal').classList.remove('show');
+                    })
+                    .catch(error => {
+                        alert('Error updating transaction: ' + error.message);
+                    });
+            }
+            
+            // Event listener for edit form submission
+            document.getElementById('edit-transaction-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const transactionId = document.getElementById('edit-transaction-id').value;
+                const type = document.getElementById('edit-type').value;
+                
+                let transactionData = {
+                    type: type,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Add fields based on transaction type
+                if (type === 'Kacha' || type === 'Fine Gold') {
+                    transactionData.grams = parseFloat(document.getElementById('edit-grams').value) || 0;
+                    transactionData.touch = parseFloat(document.getElementById('edit-touch').value) || 0;
+                    transactionData.rate = parseFloat(document.getElementById('edit-rate').value) || 0;
+                    transactionData.total = parseFloat(document.getElementById('edit-total').value) || 0;
+                    
+                    // Add gold purity only for Kacha
+                    if (type === 'Kacha') {
+                        transactionData.goldPurity = parseFloat(document.getElementById('edit-gold-purity').value) || 0;
+                    }
+                    
+                    // Get transaction type
+                    const transactionType = document.querySelector('input[name="edit-transaction-type"]:checked');
+                    if (transactionType) {
+                        transactionData.transactionType = transactionType.value;
+                    }
+                    
+                    // Get payment method and relevant fields
+                    const paymentMethod = document.querySelector('input[name="edit-payment-method"]:checked');
+                    if (paymentMethod) {
+                        transactionData.paymentMethod = paymentMethod.value;
+                        
+                        if (paymentMethod.value === 'cash') {
+                            transactionData.cashGiven = parseFloat(document.getElementById('edit-cash-given').value) || 0;
+                        } else if (paymentMethod.value === 'exchange') {
+                            const exchangeType = document.querySelector('input[name="edit-exchange-type"]:checked');
+                            if (exchangeType) {
+                                transactionData.exchangeType = exchangeType.value;
+                            }
+                            transactionData.exchangeGrams = parseFloat(document.getElementById('edit-exchange-grams').value) || 0;
+                            transactionData.exchangeTouch = parseFloat(document.getElementById('edit-exchange-touch').value) || 0;
+                            transactionData.exchangeRate = parseFloat(document.getElementById('edit-exchange-rate').value) || 0;
+                            transactionData.exchangeTotal = parseFloat(document.getElementById('edit-exchange-total').value) || 0;
+                            
+                            // Add exchange gold purity only for Kacha
+                            if (exchangeType && exchangeType.value === 'Kacha') {
+                                transactionData.exchangeGoldPurity = parseFloat(document.getElementById('edit-exchange-gold-purity').value) || 0;
+                            }
+                        }
+                    }
+                } else if (type === 'Cash Payment') {
+                    transactionData.cashAmount = parseFloat(document.getElementById('edit-cash-amount').value) || 0;
+                    
+                    const cashDirection = document.querySelector('input[name="edit-cash-direction"]:checked');
+                    if (cashDirection) {
+                        transactionData.cashDirection = cashDirection.value;
+                    }
+                } else if (type === 'Exchange Gold') {
+                    transactionData.exchangeGrams = parseFloat(document.getElementById('edit-exchange-gold-grams').value) || 0;
+                    transactionData.exchangeTouch = parseFloat(document.getElementById('edit-exchange-gold-touch').value) || 0;
+                    
+                    const exchangeGoldDirection = document.querySelector('input[name="edit-exchange-gold-direction"]:checked');
+                    if (exchangeGoldDirection) {
+                        transactionData.exchangeGoldDirection = exchangeGoldDirection.value;
+                    }
+                    
+                    const exchangeType = document.querySelector('input[name="edit-exchange-gold-type"]:checked');
+                    if (exchangeType) {
+                        transactionData.exchangeType = exchangeType.value; // This was missing
+                        
+                        // Add gold purity only for Kacha
+                        if (exchangeType.value === 'Kacha') {
+                            transactionData.goldPurity = parseFloat(document.getElementById('edit-exchange-gold-purity-main').value) || 0;
+                        }
+                    }
+                }
+                
+                // Update the transaction
+                updateTransaction(transactionId, transactionData);
             });
             
-            // Update the summary display with proper color coding
-            const moneyBalanceEl = document.getElementById('money-balance');
-            const goldBalanceEl = document.getElementById('gold-balance');
-            
-            // Money balance: positive means customer owes us, negative means we owe customer
-            if (moneyBalance >= 0) {
-                moneyBalanceEl.textContent = `Customer owes: ₹${moneyBalance.toFixed(2)}`;
-                moneyBalanceEl.className = 'customer-owes';
-            } else {
-                moneyBalanceEl.textContent = `We owe customer: ₹${Math.abs(moneyBalance).toFixed(2)}`;
-                moneyBalanceEl.className = 'we-owe';
-            }
-            
-            // Gold balance: positive means we have customer's gold, negative means we owe gold
-            if (goldBalance >= 0) {
-                goldBalanceEl.textContent = `We hold: ${goldBalance.toFixed(3)} g`;
-                goldBalanceEl.className = 'customer-owes';
-            } else {
-                goldBalanceEl.textContent = `We owe: ${Math.abs(goldBalance).toFixed(3)} g`;
-                goldBalanceEl.className = 'we-owe';
-            }
-        }
-        function createTransactionRow(transaction) {
-    const row = document.createElement('tr');
-    let dateString = 'N/A';
-    if (transaction.createdAt) {
-        const date = transaction.createdAt.toDate();
-        dateString = date.toLocaleDateString() + " " + date.toLocaleTimeString();
-    }
-    
-    // Initialize values for the new columns
-    let cashIn = '';
-    let cashOut = '';
-    let goldIn = '';
-    let goldOut = '';
-    
-    // Set default values for display
-    let displayType = transaction.type || 'N/A';
-    let displayGrams = transaction.grams || 'N/A';
-    let displayTouch = transaction.touch || 'N/A';
-    let displayRate = transaction.rate || 'N/A';
-    let displayTotal = transaction.total || 'N/A';
-    let transactionTypeDisplay = 'N/A';
-    let pureGoldGrams = 'N/A';
-    
-    // Handle different transaction types
-    switch(transaction.type) {
-        case 'Kacha':
-        case 'Fine Gold':
-            // Gold transactions
-            if (transaction.transactionType === 'buy') {
-                // We're buying from customer
-                if (transaction.paymentMethod === 'cash') {
-                    cashOut = `₹${transaction.cashGiven ? Number(transaction.cashGiven).toFixed(2) : '0.00'}`;
-                } else if (transaction.paymentMethod === 'exchange') {
-                    goldIn = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
-                }
-                // Record the gold we're receiving
-                goldIn = `${transaction.grams ? Number(transaction.grams).toFixed(3) : '0.000'} g`;
+            // Event listener for type change in edit form
+            document.getElementById('edit-type').addEventListener('change', function() {
+                toggleEditSections(this.value);
                 
-            } else if (transaction.transactionType === 'sell') {
-                // We're selling to customer
-                if (transaction.paymentMethod === 'cash') {
-                    cashIn = `₹${transaction.cashGiven ? Number(transaction.cashGiven).toFixed(2) : '0.00'}`;
-                } else if (transaction.paymentMethod === 'exchange') {
-                    goldOut = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
-                }
-                // Record the gold we're giving
-                goldOut = `${transaction.grams ? Number(transaction.grams).toFixed(3) : '0.000'} g`;
-            }
-            
-            transactionTypeDisplay = transaction.transactionType || 'N/A';
-            
-            // Calculate pure gold grams
-            if (transaction.grams && transaction.touch) {
-                const pureGrams = (Number(transaction.grams) * Number(transaction.touch)) / 100;
-                pureGoldGrams = pureGrams.toFixed(3) + ' g';
-            } else if (transaction.type === 'Fine Gold' && transaction.grams) {
-                // Fine Gold is 100% pure
-                pureGoldGrams = Number(transaction.grams).toFixed(3) + ' g';
-            }
-            break;
-            
-        case 'Cash Payment':
-            // Cash transactions
-            if (transaction.cashDirection === 'in') {
-                cashIn = `₹${transaction.cashAmount ? Number(transaction.cashAmount).toFixed(2) : '0.00'}`;
-            } else if (transaction.cashDirection === 'out') {
-                cashOut = `₹${transaction.cashAmount ? Number(transaction.cashAmount).toFixed(2) : '0.00'}`;
-            }
-            
-            transactionTypeDisplay = transaction.cashDirection || 'N/A';
-            break;
-            
-            case 'Exchange Gold':
-    // Pure gold exchange
-    // Check all possible field names that might contain the direction
-    const direction = transaction.exchangeGoldDirection || 
-                     transaction.direction || 
-                     transaction.transactionType ||
-                     (transaction.exchangeGoldDirection === 'buy' ? 'buy' : 
-                      transaction.exchangeGoldDirection === 'sell' ? 'sell' : null);
-    
-    if (direction === 'buy') {
-        // We're buying gold from customer
-        goldIn = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
-        transactionTypeDisplay = 'buy';
-    } else if (direction === 'sell') {
-        // We're selling gold to customer
-        goldOut = `${transaction.exchangeGrams ? Number(transaction.exchangeGrams).toFixed(3) : '0.000'} g`;
-        transactionTypeDisplay = 'sell';
-    } else {
-        // If we still can't determine, check the actual form data that was saved
-        // Look for any indication of direction in the transaction data
-        console.log("Full transaction data:", transaction);
-        
-        // Try to infer from other fields - if goldOut is populated, it's probably sell
-        if (transaction.goldOut || transaction.cashIn) {
-            transactionTypeDisplay = 'sell';
-        } 
-        // If goldIn is populated, it's probably buy
-        else if (transaction.goldIn || transaction.cashOut) {
-            transactionTypeDisplay = 'buy';
-        }
-        else {
-            transactionTypeDisplay = 'unknown';
-        }
-    }
-    
-    // For Exchange Gold, use exchangeGrams in the grams column
-    displayGrams = transaction.exchangeGrams || 'N/A';
-    
-    // For Exchange Gold, use exchangeTouch in the touch column
-    displayTouch = transaction.exchangeTouch || transaction.touch || 'N/A';
-    
-    // Show exchange type in parentheses
-    if (transaction.exchangeType) {
-        displayType = `${transaction.type} (${transaction.exchangeType})`;
-    }
-    
-    // Calculate pure gold grams for Exchange Gold
-    if (transaction.exchangeGrams && transaction.exchangeTouch) {
-        const pureGrams = (Number(transaction.exchangeGrams) * Number(transaction.exchangeTouch)) / 100;
-        pureGoldGrams = pureGrams.toFixed(3) + ' g';
-    } else if (transaction.exchangeType === 'Fine Gold' && transaction.exchangeGrams) {
-        // Fine Gold is 100% pure
-        pureGoldGrams = Number(transaction.exchangeGrams).toFixed(3) + ' g';
-    } else if (transaction.exchangeGrams) {
-        // If no touch percentage, assume 100% pure
-        pureGoldGrams = Number(transaction.exchangeGrams).toFixed(3) + ' g';
-    }
-    
-    // DEBUG: Log the transaction to see what fields are available
-    console.log("Exchange Gold Transaction - Direction:", direction);
-    console.log("Available fields:", Object.keys(transaction).filter(key => 
-        key.includes('direction') || key.includes('Direction') || 
-        key.includes('type') || key.includes('Type')));
-    break;
-    }
-    
-    // Format numeric values
-    if (displayGrams !== 'N/A') displayGrams = Number(displayGrams).toFixed(3);
-    if (displayTouch !== 'N/A') displayTouch = Number(displayTouch).toFixed(1) + '%';
-    if (displayRate !== 'N/A') displayRate = '₹' + Number(displayRate).toFixed(2);
-    if (displayTotal !== 'N/A') displayTotal = '₹' + Number(displayTotal).toFixed(2);
-    
-    row.innerHTML = `
-        <td>${dateString}</td>
-        <td>${displayType}</td>
-        <td>${displayGrams}</td>
-        <td>${displayTouch}</td>
-        <td>${pureGoldGrams}</td>
-        <td>${displayRate}</td>
-        <td>${displayTotal}</td>
-        <td>${transactionTypeDisplay}</td> <!-- This will now show buy/sell for Exchange Gold -->
-        <td>${cashIn}</td>
-        <td>${cashOut}</td>
-        <td>${goldIn}</td>
-        <td>${goldOut}</td>
-        <td class="transaction-actions">
-            <button class="edit-btn" data-id="${transaction.id}">Edit</button>
-            <button class="delete-btn" data-id="${transaction.id}">Delete</button>
-        </td>
-    `;
-    
-    // Add event listeners for edit and delete buttons
-    row.querySelector('.edit-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        editTransaction(transaction);
-    });
-    
-    row.querySelector('.delete-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        confirmDeleteTransaction(transaction);
-    });
-    
-    return row;
-}
-  
-        // Edit transaction function
-        function editTransaction(transaction) {
-            // Populate the form with transaction data
-            document.getElementById('edit-transaction-id').value = transaction.id;
-            document.getElementById('edit-type').value = transaction.type || '';
-            
-            // Show/hide appropriate sections based on transaction type
-            toggleEditSections(transaction.type);
-            
-            // Populate fields based on transaction type
-            if (transaction.type === 'Kacha' || transaction.type === 'Fine Gold') {
-                document.getElementById('edit-grams').value = transaction.grams || '';
-                document.getElementById('edit-touch').value = transaction.touch || '';
-                document.getElementById('edit-gold-purity').value = transaction.goldPurity || '';
-                document.getElementById('edit-rate').value = transaction.rate || '';
-                document.getElementById('edit-total').value = transaction.total || '';
-                
-                // Show gold purity field only for Kacha
-                if (transaction.type === 'Kacha') {
+                // Show/hide gold purity field based on type
+                if (this.value === 'Kacha') {
                     document.getElementById('edit-gold-purity-field').style.display = 'block';
                 } else {
                     document.getElementById('edit-gold-purity-field').style.display = 'none';
                 }
-                
-                // Set transaction type
-                if (transaction.transactionType) {
-                    document.querySelector(`input[name="edit-transaction-type"][value="${transaction.transactionType}"]`).checked = true;
-                }
-                
-                // Set payment method and populate relevant fields
-                if (transaction.paymentMethod) {
-                    document.querySelector(`input[name="edit-payment-method"][value="${transaction.paymentMethod}"]`).checked = true;
-                    
-                    if (transaction.paymentMethod === 'cash') {
-                        document.getElementById('edit-cash-given').value = transaction.cashGiven || '';
+            });
+            
+            // Event listener for exchange type change in edit form
+            document.querySelectorAll('input[name="edit-exchange-type"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'cash') {
                         document.getElementById('edit-cash-details').style.display = 'block';
-                    } else if (transaction.paymentMethod === 'exchange') {
-                        document.querySelector(`input[name="edit-exchange-type"][value="${transaction.exchangeType}"]`).checked = true;
-                        document.getElementById('edit-exchange-grams').value = transaction.exchangeGrams || '';
-                        document.getElementById('edit-exchange-touch').value = transaction.exchangeTouch || '';
-                        document.getElementById('edit-exchange-gold-purity').value = transaction.exchangeGoldPurity || '';
-                        document.getElementById('edit-exchange-rate').value = transaction.exchangeRate || '';
-                        document.getElementById('edit-exchange-total').value = transaction.exchangeTotal || '';
+                        document.getElementById('edit-exchange-details').style.display = 'none';
+                    } else if (this.value === 'exchange') {
+                        document.getElementById('edit-cash-details').style.display = 'none';
                         document.getElementById('edit-exchange-details').style.display = 'block';
                         
-                        // Show gold purity field only for Kacha in exchange
-                        if (transaction.exchangeType === 'Kacha') {
+                        // Show/hide gold purity field based on exchange type
+                        const exchangeType = document.querySelector('input[name="edit-exchange-type"]:checked');
+                        if (exchangeType && exchangeType.value === 'Kacha') {
                             document.getElementById('edit-exchange-gold-purity-field').style.display = 'block';
                         } else {
                             document.getElementById('edit-exchange-gold-purity-field').style.display = 'none';
                         }
                     }
-                }
-            } else if (transaction.type === 'Cash Payment') {
-                document.getElementById('edit-cash-amount').value = transaction.cashAmount || '';
-                if (transaction.cashDirection) {
-                    document.querySelector(`input[name="edit-cash-direction"][value="${transaction.cashDirection}"]`).checked = true;
-                }
-            } else if (transaction.type === 'Exchange Gold') {
-                document.getElementById('edit-exchange-gold-grams').value = transaction.exchangeGrams || '';
-                document.getElementById('edit-exchange-gold-touch').value = transaction.exchangeTouch || '';
-                document.getElementById('edit-exchange-gold-purity-main').value = transaction.goldPurity || '';
-                
-                if (transaction.exchangeGoldDirection) {
-                    document.querySelector(`input[name="edit-exchange-gold-direction"][value="${transaction.exchangeGoldDirection}"]`).checked = true;
-                }
-                
-                if (transaction.exchangeType) {
-                    document.querySelector(`input[name="edit-exchange-gold-type"][value="${transaction.exchangeType}"]`).checked = true;
-                    
-                    // Show gold purity field only for Kacha
-                    if (transaction.exchangeType === 'Kacha') {
+                });
+            });
+            
+            // Event listener for exchange gold type change in edit form
+            document.querySelectorAll('input[name="edit-exchange-gold-type"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Show/hide gold purity field based on exchange type
+                    if (this.value === 'Kacha') {
                         document.getElementById('edit-exchange-gold-purity-main-field').style.display = 'block';
                     } else {
                         document.getElementById('edit-exchange-gold-purity-main-field').style.display = 'none';
                     }
-                }
-            }
-            
-            // Show the edit modal
-            document.getElementById('edit-transaction-modal').classList.add('show');
-        }
-        
-        // Toggle edit sections based on transaction type
-        function toggleEditSections(type) {
-            // Hide all sections first
-            document.getElementById('edit-gold-details').style.display = 'none';
-            document.getElementById('edit-cash-payment-details').style.display = 'none';
-            document.getElementById('edit-exchange-gold-details').style.display = 'none';
-            document.getElementById('edit-cash-details').style.display = 'none';
-            document.getElementById('edit-exchange-details').style.display = 'none';
-            
-            // Show the relevant section
-            if (type === 'Kacha' || type === 'Fine Gold') {
-                document.getElementById('edit-gold-details').style.display = 'block';
-            } else if (type === 'Cash Payment') {
-                document.getElementById('edit-cash-payment-details').style.display = 'block';
-            } else if (type === 'Exchange Gold') {
-                document.getElementById('edit-exchange-gold-details').style.display = 'block';
-            }
-        }
-        
-        // Confirm delete transaction
-        function confirmDeleteTransaction(transaction) {
-            transactionToDelete = transaction;
-            document.getElementById('delete-confirm-modal').classList.add('show');
-        }
-        
-        // Delete transaction function
-        function deleteTransaction(transactionId) {
-            db.collection('transactions').doc(transactionId).delete()
-                .then(() => {
-                    alert('Transaction deleted successfully!');
-                    // Reload transactions
-                    loadTransactions(currentCustomerId);
-                    document.getElementById('delete-confirm-modal').classList.remove('show');
-                })
-                .catch(error => {
-                    alert('Error deleting transaction: ' + error.message);
-                    document.getElementById('delete-confirm-modal').classList.remove('show');
                 });
-        }
-        
-        // Update transaction function
-        function updateTransaction(transactionId, transactionData) {
-            db.collection('transactions').doc(transactionId).update(transactionData)
-                .then(() => {
-                    alert('Transaction updated successfully!');
-                    // Reload transactions
-                    loadTransactions(currentCustomerId);
-                    document.getElementById('edit-transaction-modal').classList.remove('show');
-                })
-                .catch(error => {
-                    alert('Error updating transaction: ' + error.message);
-                });
-        }
-        
-        // Event listener for edit form submission
-        document.getElementById('edit-transaction-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const transactionId = document.getElementById('edit-transaction-id').value;
-            const type = document.getElementById('edit-type').value;
-            
-            let transactionData = {
-                type: type,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-            
-            // Add fields based on transaction type
-            if (type === 'Kacha' || type === 'Fine Gold') {
-                transactionData.grams = parseFloat(document.getElementById('edit-grams').value) || 0;
-                transactionData.touch = parseFloat(document.getElementById('edit-touch').value) || 0;
-                transactionData.rate = parseFloat(document.getElementById('edit-rate').value) || 0;
-                transactionData.total = parseFloat(document.getElementById('edit-total').value) || 0;
-                
-                // Add gold purity only for Kacha
-                if (type === 'Kacha') {
-                    transactionData.goldPurity = parseFloat(document.getElementById('edit-gold-purity').value) || 0;
-                }
-                
-                // Get transaction type
-                const transactionType = document.querySelector('input[name="edit-transaction-type"]:checked');
-                if (transactionType) {
-                    transactionData.transactionType = transactionType.value;
-                }
-                
-                // Get payment method and relevant fields
-                const paymentMethod = document.querySelector('input[name="edit-payment-method"]:checked');
-                if (paymentMethod) {
-                    transactionData.paymentMethod = paymentMethod.value;
-                    
-                    if (paymentMethod.value === 'cash') {
-                        transactionData.cashGiven = parseFloat(document.getElementById('edit-cash-given').value) || 0;
-                    } else if (paymentMethod.value === 'exchange') {
-                        const exchangeType = document.querySelector('input[name="edit-exchange-type"]:checked');
-                        if (exchangeType) {
-                            transactionData.exchangeType = exchangeType.value;
-                        }
-                        transactionData.exchangeGrams = parseFloat(document.getElementById('edit-exchange-grams').value) || 0;
-                        transactionData.exchangeTouch = parseFloat(document.getElementById('edit-exchange-touch').value) || 0;
-                        transactionData.exchangeRate = parseFloat(document.getElementById('edit-exchange-rate').value) || 0;
-                        transactionData.exchangeTotal = parseFloat(document.getElementById('edit-exchange-total').value) || 0;
-                        
-                        // Add exchange gold purity only for Kacha
-                        if (exchangeType && exchangeType.value === 'Kacha') {
-                            transactionData.exchangeGoldPurity = parseFloat(document.getElementById('edit-exchange-gold-purity').value) || 0;
-                        }
-                    }
-                }
-            } else if (type === 'Cash Payment') {
-                transactionData.cashAmount = parseFloat(document.getElementById('edit-cash-amount').value) || 0;
-                
-                const cashDirection = document.querySelector('input[name="edit-cash-direction"]:checked');
-                if (cashDirection) {
-                    transactionData.cashDirection = cashDirection.value;
-                }
-            } else if (type === 'Exchange Gold') {
-                transactionData.exchangeGrams = parseFloat(document.getElementById('edit-exchange-gold-grams').value) || 0;
-                transactionData.exchangeTouch = parseFloat(document.getElementById('edit-exchange-gold-touch').value) || 0;
-                
-                const exchangeGoldDirection = document.querySelector('input[name="edit-exchange-gold-direction"]:checked');
-                if (exchangeGoldDirection) {
-                    transactionData.exchangeGoldDirection = exchangeGoldDirection.value;
-                }
-                
-                const exchangeType = document.querySelector('input[name="edit-exchange-gold-type"]:checked');
-                if (exchangeType) {
-                    transactionData.exchangeType = exchangeType.value; // This was missing
-                    
-                    // Add gold purity only for Kacha
-                    if (exchangeType.value === 'Kacha') {
-                        transactionData.goldPurity = parseFloat(document.getElementById('edit-exchange-gold-purity-main').value) || 0;
-                    }
-                }
-            }
-            
-            // Update the transaction
-            updateTransaction(transactionId, transactionData);
-        });
-        
-        // Event listener for type change in edit form
-        document.getElementById('edit-type').addEventListener('change', function() {
-            toggleEditSections(this.value);
-            
-            // Show/hide gold purity field based on type
-            if (this.value === 'Kacha') {
-                document.getElementById('edit-gold-purity-field').style.display = 'block';
-            } else {
-                document.getElementById('edit-gold-purity-field').style.display = 'none';
-            }
-        });
-        
-        // Event listener for exchange type change in edit form
-        document.querySelectorAll('input[name="edit-exchange-type"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.value === 'cash') {
-                    document.getElementById('edit-cash-details').style.display = 'block';
-                    document.getElementById('edit-exchange-details').style.display = 'none';
-                } else if (this.value === 'exchange') {
-                    document.getElementById('edit-cash-details').style.display = 'none';
-                    document.getElementById('edit-exchange-details').style.display = 'block';
-                    
-                    // Show/hide gold purity field based on exchange type
-                    const exchangeType = document.querySelector('input[name="edit-exchange-type"]:checked');
-                    if (exchangeType && exchangeType.value === 'Kacha') {
-                        document.getElementById('edit-exchange-gold-purity-field').style.display = 'block';
-                    } else {
-                        document.getElementById('edit-exchange-gold-purity-field').style.display = 'none';
-                    }
-                }
             });
-        });
-        
-        // Event listener for exchange gold type change in edit form
-        document.querySelectorAll('input[name="edit-exchange-gold-type"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                // Show/hide gold purity field based on exchange type
-                if (this.value === 'Kacha') {
-                    document.getElementById('edit-exchange-gold-purity-main-field').style.display = 'block';
-                } else {
-                    document.getElementById('edit-exchange-gold-purity-main-field').style.display = 'none';
-                }
-            });
-        });
-        
-        // Event listeners for modal close buttons
-        document.getElementById('close-edit-modal').addEventListener('click', function() {
-            document.getElementById('edit-transaction-modal').classList.remove('show');
-        });
-        
-        document.getElementById('close-delete-modal').addEventListener('click', function() {
-            document.getElementById('delete-confirm-modal').classList.remove('show');
-        });
-        
-        document.getElementById('cancel-delete').addEventListener('click', function() {
-            document.getElementById('delete-confirm-modal').classList.remove('show');
-        });
-        
-        document.getElementById('confirm-delete').addEventListener('click', function() {
-            if (transactionToDelete) {
-                deleteTransaction(transactionToDelete.id);
-            }
-        });
-        
-        // Close modals when clicking outside
-        window.addEventListener('click', function(event) {
-            if (event.target.matches('#edit-transaction-modal')) {
+            
+            // Event listeners for modal close buttons
+            document.getElementById('close-edit-modal').addEventListener('click', function() {
                 document.getElementById('edit-transaction-modal').classList.remove('show');
-            }
-            if (event.target.matches('#delete-confirm-modal')) {
+            });
+            
+            document.getElementById('close-delete-modal').addEventListener('click', function() {
                 document.getElementById('delete-confirm-modal').classList.remove('show');
-            }
-        });
-        
-        // Modal/menu/logout unchanged
-        document.getElementById('back-to-customers').addEventListener('click', () => {
-            document.getElementById('transactions-section').style.display = 'none';
-            document.querySelector('.card').style.display = 'block';
-        });
-        document.getElementById('mobile-menu-button').addEventListener('click', () => {
-            document.getElementById('mobile-menu').classList.add('show');
-            document.getElementById('overlay').classList.add('show');
-        });
-        document.getElementById('menu-close').addEventListener('click', () => {
-            document.getElementById('mobile-menu').classList.remove('show');
-            document.getElementById('overlay').classList.remove('show');
-        });
-        document.getElementById('overlay').addEventListener('click', function() {
-            document.getElementById('mobile-menu').classList.remove('show');
-            this.classList.remove('show');
-        });
-        document.getElementById('add-customer-btn').addEventListener('click', function() {
-            document.getElementById('customer-modal').classList.add('show');
-        });
-        document.getElementById('add-customer-sidebar').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('customer-modal').classList.add('show');
-        });
-        document.getElementById('mobile-add-customer').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('customer-modal').classList.add('show');
-            document.getElementById('mobile-menu').classList.remove('show');
-            document.getElementById('overlay').classList.remove('show');
-        });
-        document.getElementById('close-modal').addEventListener('click', function() {
-            document.getElementById('customer-modal').classList.remove('show');
-        });
-        window.addEventListener('click', function(event) {
-            if (event.target.matches('#customer-modal')) {
+            });
+            
+            document.getElementById('cancel-delete').addEventListener('click', function() {
+                document.getElementById('delete-confirm-modal').classList.remove('show');
+            });
+            
+            document.getElementById('confirm-delete').addEventListener('click', function() {
+                if (transactionToDelete) {
+                    deleteTransaction(transactionToDelete.id);
+                }
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target.matches('#edit-transaction-modal')) {
+                    document.getElementById('edit-transaction-modal').classList.remove('show');
+                }
+                if (event.target.matches('#delete-confirm-modal')) {
+                    document.getElementById('delete-confirm-modal').classList.remove('show');
+                }
+            });
+            
+            // Modal/menu/logout unchanged
+            document.getElementById('back-to-customers').addEventListener('click', () => {
+                document.getElementById('transactions-section').style.display = 'none';
+                document.querySelector('.card').style.display = 'block';
+            });
+            document.getElementById('mobile-menu-button').addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('show');
+                document.getElementById('overlay').classList.add('show');
+            });
+            document.getElementById('menu-close').addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.remove('show');
+                document.getElementById('overlay').classList.remove('show');
+            });
+            document.getElementById('overlay').addEventListener('click', function() {
+                document.getElementById('mobile-menu').classList.remove('show');
+                this.classList.remove('show');
+            });
+            document.getElementById('add-customer-btn').addEventListener('click', function() {
+                document.getElementById('customer-modal').classList.add('show');
+            });
+            document.getElementById('add-customer-sidebar').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('customer-modal').classList.add('show');
+            });
+            document.getElementById('mobile-add-customer').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('customer-modal').classList.add('show');
+                document.getElementById('mobile-menu').classList.remove('show');
+                document.getElementById('overlay').classList.remove('show');
+            });
+            document.getElementById('close-modal').addEventListener('click', function() {
                 document.getElementById('customer-modal').classList.remove('show');
-            }
-        });
-        document.getElementById('customer-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('customer-name').value;
-            const phone = document.getElementById('customer-phone').value;
-            if (name && phone) {
-                db.collection('customers').add({
-                    name,
-                    phone,
-                    userId: auth.currentUser.uid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    alert("Customer added successfully!");
+            });
+            window.addEventListener('click', function(event) {
+                if (event.target.matches('#customer-modal')) {
                     document.getElementById('customer-modal').classList.remove('show');
-                    this.reset();
-                    loadCustomers();
-                }).catch(err => {
-                    alert("Error adding customer: " + err.message);
-                });
-            }
-        });
-        document.getElementById('logout-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            auth.signOut().then(() => window.location.href = 'index.html');
-        });
-        document.getElementById('logout-btn-desktop').addEventListener('click', (e) => {
-            e.preventDefault();
-            auth.signOut().then(() => window.location.href = 'index.html');
-        });
-    </script>
-</body>
-</html>
+                }
+            });
+            document.getElementById('customer-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('customer-name').value;
+                const phone = document.getElementById('customer-phone').value;
+                if (name && phone) {
+                    db.collection('customers').add({
+                        name,
+                        phone,
+                        userId: auth.currentUser.uid,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(() => {
+                        alert("Customer added successfully!");
+                        document.getElementById('customer-modal').classList.remove('show');
+                        this.reset();
+                        loadCustomers();
+                    }).catch(err => {
+                        alert("Error adding customer: " + err.message);
+                    });
+                }
+            });
+            document.getElementById('logout-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                auth.signOut().then(() => window.location.href = 'index.html');
+            });
+            document.getElementById('logout-btn-desktop').addEventListener('click', (e)=>
+            {
+                e.preventDefault();
+                auth.signOut().then(() => window.location.href = 'index.html');
+            });
+        
+        </script>
+    </body>
+    </html>
